@@ -17,9 +17,13 @@ coroutinesVersion = "1.7.3"
 dateTimeVersion = "0.4.1"
 koin = "3.5.3"
 ktor = "2.3.7"
+lifecycleViewmodelComposeVersion = "2.8.0"
 sqlDelight = "2.0.1"
 lifecycleViewmodelCompose = "2.7.0"
 material3 = "1.2.0"
+voyager = "1.0.0"
+appyx = "2.0.1"
+lifecycleViewmodelAndroid = "2.8.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -42,10 +46,29 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelComposeVersion" }
 native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
 runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelight" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref="material3" }
+
+
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
+voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
+voyager-bottomSheetNavigator = { module = "cafe.adriel.voyager:voyager-bottom-sheet-navigator", version.ref = "voyager" }
+voyager-tabNavigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
+voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
+voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+voyager-hilt = { module = "cafe.adriel.voyager:voyager-hilt", version.ref = "voyager" }
+
+appyx-utils-material3 = { module = "com.bumble.appyx:utils-material3", version.ref = "appyx"}
+appyx-navigation = { module = "com.bumble.appyx:appyx-navigation", version.ref = "appyx"}
+appyx-interactions = { module = "com.bumble.appyx:appyx-interactions", version.ref = "appyx"}
+appyx-backstack = { module = "com.bumble.appyx:backstack", version.ref = "appyx"}
+appyx-spotlight = { module = "com.bumble.appyx:spotlight", version.ref = "appyx"}
+androidx-lifecycle-viewmodel-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-android", version.ref = "lifecycleViewmodelAndroid" }
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

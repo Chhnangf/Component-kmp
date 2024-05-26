@@ -12,6 +12,7 @@ plugins {
 }
 
 kotlin {
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
@@ -21,10 +22,14 @@ kotlin {
             implementation(libs.runtime)
             implementation(libs.kotlinx.datetime)
             implementation(libs.koin.core)
+            implementation(libs.lifecycle.viewmodel.compose)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
             implementation(libs.android.driver)
+            implementation(libs.androidx.compose.material3)
+            implementation(libs.koin.androidx.compose)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -50,7 +55,6 @@ kotlin {
     }
     
     sourceSets {
-        
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -64,6 +68,33 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
         }
     }
+
+    // for voyager
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenModel)
+            implementation(libs.voyager.bottomSheetNavigator)
+            implementation(libs.voyager.tabNavigator)
+            implementation(libs.voyager.transitions)
+        }
+        androidMain.dependencies {
+            implementation(libs.voyager.koin)
+            implementation(libs.voyager.hilt)
+        }
+    }
+
+    // for appyx
+    sourceSets {
+       commonMain.dependencies {
+                // Use api, not implementation!
+                api(libs.appyx.utils.material3)
+                api(libs.appyx.spotlight)
+                api(libs.appyx.navigation)
+                implementation(libs.appyx.interactions)
+                implementation(libs.appyx.backstack)
+            }
+        }
 }
 
 android {
@@ -101,12 +132,13 @@ android {
     dependencies {
         debugImplementation(compose.uiTooling)
     }
-    sqldelight {
-        databases {
-            create("AppDatabase") {
-                packageName.set("com.jetbrains.spacetutorial.cache")
-            }
+
+}
+
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.jetbrains.spacetutorial.cache")
         }
     }
 }
-

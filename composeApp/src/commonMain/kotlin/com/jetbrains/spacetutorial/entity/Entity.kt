@@ -4,6 +4,9 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+class Entity () {
+
+}
 @Serializable
 data class RocketLaunch(
     @SerialName("flight_number")

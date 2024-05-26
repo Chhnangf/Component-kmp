@@ -19,14 +19,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
-import routing.Routes
+import compoment.data.SharedStateManager
+import compoment.navigation.Routes
 
 
-class MainScreen: Screen {
-
-    private var currentTab = mutableStateOf(Routes.Home_Screen)
+class MainScreen : Screen {
 
     @Composable
     override fun Content() {
@@ -36,9 +34,10 @@ class MainScreen: Screen {
                 HeaderBar()
 
                 Box(
-                    modifier = Modifier.fillMaxSize().weight(1f).background(MaterialTheme.colorScheme.background)
+                    modifier = Modifier.fillMaxSize().weight(1f)
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
-                    currentTab.value.target()
+                    SharedStateManager.currentTab.value.target()
                 }
                 // Main Content
                 NavationBar()
@@ -55,39 +54,39 @@ class MainScreen: Screen {
         ) {
             // 4 * Button
             Row(
-                modifier =  Modifier.fillMaxWidth().padding(20.dp, 6.dp, 20.dp, 6.dp),
+                modifier = Modifier.fillMaxWidth().padding(20.dp, 6.dp, 20.dp, 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
                 Routes.entries.forEach {
-                // Button: Icon + Text
+                    // Button: Icon + Text
 
-                        Column (
-                            modifier = Modifier.clickable(
-                                onClick = {
-                                    currentTab.value = it
-                                          },
-                                indication = null,
-                                interactionSource = MutableInteractionSource()
-                            ),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                imageVector = it.imageVector,
-                                contentDescription = it.description,
-                                tint = if (it == currentTab.value) androidx.compose.ui.graphics.Color.Blue else androidx.compose.ui.graphics.Color.Black
-                            )
+                    Column(
+                        modifier = Modifier.clickable(
+                            onClick = {
+                                SharedStateManager.update(it)
+                            },
+                            indication = null,
+                            interactionSource = MutableInteractionSource()
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = it.imageVector,
+                            contentDescription = it.description,
+                            tint = if (it == SharedStateManager.currentTab.value) androidx.compose.ui.graphics.Color.Blue else androidx.compose.ui.graphics.Color.Black
+                        )
 
-                            Text(
-                                text = it.description,
-                                color = if (it == currentTab.value) androidx.compose.ui.graphics.Color.Blue else androidx.compose.ui.graphics.Color.Black
-                            )
-
-                        }
+                        Text(
+                            text = it.description,
+                            color = if (it == SharedStateManager.currentTab.value) androidx.compose.ui.graphics.Color.Blue else androidx.compose.ui.graphics.Color.Black
+                        )
 
                     }
+
                 }
             }
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 package screen
+
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,34 +24,29 @@ import compoment.navigation.Routes
 
 @Composable
 fun HomeView() {
-    val tabs = listOf(
-        Routes.TabRoute.Tab1,
-        Routes.TabRoute.Tab2,
-        Routes.TabRoute.Tab3
-    )
-    val currentTab = remember { mutableStateOf(tabs[1]) } // 默认显示第二个Tab
 
+    val currentTab = remember { mutableStateOf(Routes.TabRoute.Game_Screen) } // 默认显示第二个Tab
     Scaffold(
         topBar = {
-        TopAppBar(
-            title = { Text(currentTab.value.name) },
-            navigationIcon = {
-                // 如果需要，可以在这里添加返回按钮等
-            },
-            actions = {
-                // 可以在这里添加更多操作按钮
-            }
-        )
-    },
+            TopAppBar(
+                title = { Text(currentTab.value.title) },
+                navigationIcon = {
+                    // 如果需要，可以在这里添加返回按钮等
+                },
+                actions = {
+                    // 可以在这里添加更多操作按钮
+                }
+            )
+        },
         content = {
-        TabContent(currentTab.value)
-    }
+            TabContent(currentTab.value)
+        }
     )
-    // 简化的Tab切换逻辑，实际应用中可能需要更复杂的处理
-    TabRow(selectedTabIndex = tabs.indexOf(currentTab.value)) {
-        tabs.forEachIndexed { index, tab ->
+    // 直接在 TabRow 中使用枚举值
+    TabRow(selectedTabIndex = currentTab.value.ordinal) {
+        Routes.TabRoute.entries.forEach { tab ->
             Tab(
-                text = { Text(tab.name) },
+                text = { Text(tab.title) },
                 selected = currentTab.value == tab,
                 onClick = { currentTab.value = tab }
             )

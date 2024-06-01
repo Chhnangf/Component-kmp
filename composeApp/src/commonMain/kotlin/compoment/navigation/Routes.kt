@@ -1,5 +1,6 @@
 package compoment.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
@@ -7,13 +8,16 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import compoment.data.SharedStateManager
 import screen.HomeView
 import screen.PublishScreen
+import screen.PublishView
 import screen.ScheduleView
 import screen.SettingView
 import screen.StatisticsView
@@ -40,15 +44,14 @@ class Routes {
             }
         },
 
-        publish_Screen {
+        Publish_Screen {
             override val imageVector: ImageVector = Icons.Rounded.MoreVert
             override val description: String = "发布"
             @Composable
             override fun target() {
-                val navigator = LocalNavigator.current // 获取当前的navigator实例
-                if (navigator != null) {
-                    navigator.push(PublishScreen())
-                }
+                val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
+                navigator.push(PublishScreen())
+                SharedStateManager.currentTab.value = Home_Screen
             }
         },
 
@@ -76,9 +79,10 @@ class Routes {
     }
 
 
-    enum class TabRoute(title: String) {
-        Tab1("Tab 1"),
-        Tab2("Tab 2"),
-        Tab3("Tab 3")
+    // 使用枚举构造函数来初始化 title
+    enum class TabRoute(val title: String) {
+        Find_Screen("发现"),
+        Game_Screen("游戏"),
+        Music_Screen("音乐")
     }
 }

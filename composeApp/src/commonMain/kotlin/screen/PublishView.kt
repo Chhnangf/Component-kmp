@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.ui.Alignment
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ktor.util.logging.Logger
 
 class PublishScreen : Screen {
@@ -30,10 +32,8 @@ class PublishScreen : Screen {
 
 @Composable
 fun PublishView() {
-    val navigator = LocalNavigator.current // 获取当前的navigator实例
-    if (navigator != null) {
-        //navigator.push(PublishScreen())
-    }
+    val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -41,12 +41,9 @@ fun PublishView() {
                 navigationIcon = {
                     IconButton(onClick = {
                         // 这里应该是导航回到上一屏的逻辑，如果你使用的是 androidx.navigation，则通常是
-                        if (navigator != null) {
-                            //navigator.pop()
-                            //navigator.push(MainScreen())
-                        }
+                        navigator.pop()
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
             )

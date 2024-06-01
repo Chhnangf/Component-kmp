@@ -12,6 +12,23 @@ plugins {
 }
 
 kotlin {
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+    }
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = false
+        }
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -23,6 +40,18 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.koin.core)
             //implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenModel)
+            implementation(libs.voyager.bottomSheetNavigator)
+            implementation(libs.voyager.tabNavigator)
+            implementation(libs.voyager.transitions)
+
+            // Use api, not implementation!
+            api(libs.appyx.utils.material3)
+            api(libs.appyx.spotlight)
+            api(libs.appyx.navigation)
+            implementation(libs.appyx.interactions)
+            implementation(libs.appyx.backstack)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
@@ -30,36 +59,17 @@ kotlin {
             implementation(libs.androidx.compose.material3)
             implementation(libs.koin.androidx.compose)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+            implementation(compose.preview)
+            implementation(libs.androidx.activity.compose)
+
+            implementation(libs.voyager.koin)
+            implementation(libs.voyager.hilt)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
             implementation(libs.native.driver)
-        }
-    }
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
-    
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-    
-    sourceSets {
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-        }
-        commonMain.dependencies {
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -68,33 +78,6 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
         }
     }
-
-    // for voyager
-    sourceSets {
-        commonMain.dependencies {
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.screenModel)
-            implementation(libs.voyager.bottomSheetNavigator)
-            implementation(libs.voyager.tabNavigator)
-            implementation(libs.voyager.transitions)
-        }
-        androidMain.dependencies {
-            implementation(libs.voyager.koin)
-            implementation(libs.voyager.hilt)
-        }
-    }
-
-    // for appyx
-    sourceSets {
-       commonMain.dependencies {
-                // Use api, not implementation!
-                api(libs.appyx.utils.material3)
-                api(libs.appyx.spotlight)
-                api(libs.appyx.navigation)
-                implementation(libs.appyx.interactions)
-                implementation(libs.appyx.backstack)
-            }
-        }
 }
 
 android {

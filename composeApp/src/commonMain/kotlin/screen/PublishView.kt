@@ -22,6 +22,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ktor.util.logging.Logger
+import org.example.project.common.OpenGallery
 
 class PublishScreen : Screen {
     @Composable
@@ -91,4 +92,19 @@ fun PublishView() {
             }
         }
     )
+}
+
+@Composable
+fun ImagePickerScreen(openGallery: OpenGallery) {
+    val activity = LocalContext.current as? ComponentActivity
+    val getImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            // 处理选择的图片，例如传递给ViewModel处理
+            openGallery.pickImage()
+        }
+    }
+
+    Button(onClick = { getImageLauncher.launch("image/*") }) {
+        Text(text = "Pick Image")
+    }
 }

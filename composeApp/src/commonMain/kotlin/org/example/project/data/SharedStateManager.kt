@@ -1,8 +1,8 @@
-package compoment.data
+package org.example.project.data
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import compoment.navigation.Routes
+import org.example.project.data.navigation.Routes
 
 
 object SharedStateManager {

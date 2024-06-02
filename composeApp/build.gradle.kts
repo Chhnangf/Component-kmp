@@ -65,6 +65,8 @@ kotlin {
 
             implementation(libs.voyager.koin)
             implementation(libs.voyager.hilt)
+
+            implementation("androidx.activity:activity-compose:1.7.2")
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

@@ -9,9 +9,16 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.sqldelight)
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
 kotlin {
+
+    compilerOptions {
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+    }
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -65,6 +72,10 @@ kotlin {
 
             implementation(libs.voyager.koin)
             implementation(libs.voyager.hilt)
+
+            implementation("androidx.activity:activity-compose:1.7.2")
+            implementation("io.coil-kt:coil-compose:2.6.0")
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

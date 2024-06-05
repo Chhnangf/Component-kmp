@@ -1,4 +1,5 @@
-package screen
+package org.example.project.screen
+
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ktor.http.Url
 import io.ktor.util.logging.Logger
 import org.example.project.common.ImagePicker
+import org.example.project.common.ImageSelector
 
 
 class PublishScreen : Screen {
@@ -56,8 +58,10 @@ fun PublishView() {
                 },
             )
         },
-        content = {
-            Surface(modifier = Modifier.fillMaxSize()) {
+        content = {paddingValues ->
+            Surface(modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.Center,
@@ -66,13 +70,14 @@ fun PublishView() {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable {
-                            showImageSelector = true
                         }
                     ) {
                         Icon(
                             Icons.Default.Face,
                             contentDescription = "选择图片",
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(32.dp).clickable {
+                                showImageSelector = true
+                            }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("点击选择图片", color = Color.Blue)
@@ -99,14 +104,11 @@ fun PublishView() {
                     }
                 }
             }
-            if (showImageSelector) {
-                ImagePicker.pickImage()
 
-            }
         }
-
     )
 
-
+    if (showImageSelector) {
+        ImageSelector()
+    }
 }
-

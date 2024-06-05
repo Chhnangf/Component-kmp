@@ -24,6 +24,8 @@ material3 = "1.2.0"
 voyager = "1.0.0"
 appyx = "2.0.1"
 lifecycleViewmodelAndroid = "2.8.0"
+peekaboo = "0.5.2"
+coil = "2.6.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -68,6 +70,10 @@ appyx-backstack = { module = "com.bumble.appyx:backstack", version.ref = "appyx"
 appyx-spotlight = { module = "com.bumble.appyx:spotlight", version.ref = "appyx"}
 androidx-lifecycle-viewmodel-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-android", version.ref = "lifecycleViewmodelAndroid" }
 
+peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekaboo" }
+peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekaboo" }
+
+coil = {module = "io.coil-kt:coil", version.ref = "coil"}
 
 
 [plugins]

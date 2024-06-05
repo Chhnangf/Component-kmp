@@ -59,6 +59,14 @@ kotlin {
             api(libs.appyx.navigation)
             implementation(libs.appyx.interactions)
             implementation(libs.appyx.backstack)
+
+            // peekaboo-ui
+            implementation(libs.peekaboo.ui)
+
+            // peekaboo-image-picker
+            implementation(libs.peekaboo.image.picker)
+            implementation(libs.coil)
+
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)

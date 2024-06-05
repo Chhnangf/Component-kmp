@@ -1,6 +1,9 @@
 package org.example.project.common
 
-expect class ImagePicker {
-    fun pickImage(): String?
+import androidx.compose.runtime.Composable
+
+expect object ImagePicker {
+    @Composable
+    fun pickImage()
 }
 

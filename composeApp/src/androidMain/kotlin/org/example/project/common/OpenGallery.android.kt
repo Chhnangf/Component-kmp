@@ -29,16 +29,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-actual class ImagePicker {
-    actual fun pickImage(): String? {
-        TODO("Not yet implemented")
+actual object ImagePicker {
+    @Composable
+    actual fun pickImage() {
         ImageSelector()
     }
 
 }
-
-// 提供一个具体的实际实现
-
 
 @Composable
 fun ImageSelector() {
@@ -54,27 +51,26 @@ fun ImageSelector() {
             }
         }
     )
-
-
-    Column {
-        imageUri?.let {
-            Image(
-                painter = rememberAsyncImagePainter(model = imageUri),
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(36.dp)
-            )
-        }
-
-        TextButton(
-            onClick = {
-                galleryLauncher.launch("image/*")
-            }
-        ) {
-            Text(
-                text = "Pick image"
-            )
-        }
-    }
+    galleryLauncher.launch("image/*")
+//    Column {
+//        imageUri?.let {
+//            Image(
+//                painter = rememberAsyncImagePainter(model = imageUri),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .clip(CircleShape)
+//                    .size(36.dp)
+//            )
+//        }
+//
+//        TextButton(
+//            onClick = {
+//
+//            }
+//        ) {
+//            Text(
+//                text = "Pick image"
+//            )
+//        }
+//    }
 }

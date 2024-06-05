@@ -27,7 +27,7 @@ import org.example.project.data.SharedStateManager
 import org.example.project.data.navigation.Routes
 
 
-class MainScreen : Screen {
+object MainScreen : Screen {
     private var selectedTabIndex by mutableStateOf(0) // 假设默认选中第一个标签
 
     @Composable

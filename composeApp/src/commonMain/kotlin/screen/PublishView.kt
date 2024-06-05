@@ -100,8 +100,7 @@ fun PublishView() {
                 }
             }
             if (showImageSelector) {
-                ImagePicker.pickImage()
-
+                // ImagePicker.pickImage()
             }
         }
 

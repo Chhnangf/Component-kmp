@@ -7,6 +7,6 @@ import screen.MainScreen
 @Composable
 fun App() {
     MaterialTheme {
-        Navigator(MainScreen())
+        Navigator(MainScreen)
     }
 }

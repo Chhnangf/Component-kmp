@@ -26,6 +26,8 @@ appyx = "2.0.1"
 lifecycleViewmodelAndroid = "2.8.0"
 peekaboo = "0.5.2"
 coil = "2.6.0"
+uuid = "0.8.4"
+logging = "5.1.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -74,6 +76,7 @@ peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekaboo
 peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekaboo" }
 
 coil = {module = "io.coil-kt:coil", version.ref = "coil"}
+uuid = {module = "com.benasher44:uuid", version.ref = "uuid"}
 
 
 [plugins]

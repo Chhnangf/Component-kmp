@@ -11,13 +11,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.example.project.data.SharedStateManager
-import org.example.project.data.navigation.Routes.BarRoute.Home_Screen
-import screen.HomeView
-import screen.PublishNesting
-import screen.PublishScreen
-import screen.ScheduleView
-import screen.SettingView
-import screen.StatisticsView
+import org.example.project.screen.HomeView
+import org.example.project.screen.PublishScreen
+import org.example.project.screen.ScheduleView
+import org.example.project.screen.SettingView
+import org.example.project.screen.StatisticsView
 
 class Routes {
     enum class BarRoute {
@@ -42,17 +40,6 @@ class Routes {
         },
 
         Publish_Screen {
-            override val imageVector: ImageVector = Icons.Rounded.MoreVert
-            override val description: String = "发布"
-            @Composable
-            override fun target() {
-                val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
-                navigator.push(PublishScreen())
-                SharedStateManager.currentTab.value = Home_Screen
-            }
-        },
-
-        Publish_SelectImage_Screen {
             override val imageVector: ImageVector = Icons.Rounded.MoreVert
             override val description: String = "发布"
             @Composable
@@ -100,13 +87,12 @@ class Routes {
             @Composable
             override fun target() {
                 val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
-                navigator.push(screen.PublishNesting())
-                SharedStateManager.currentTab.value = BarRoute.Publish_Screen
+                //navigator.push(org.example.project.screen.PublishNesting())
+                //SharedStateManager.currentTab.value = BarRoute.Publish_Screen
             }
         };
 
         @Composable
         abstract fun target()
-
     }
 }

@@ -1,4 +1,4 @@
-package screen
+package org.example.project.screen
 
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab

@@ -26,6 +26,10 @@ appyx = "2.0.1"
 lifecycleViewmodelAndroid = "2.8.0"
 peekaboo = "0.5.2"
 coil = "2.6.0"
+uuid = "0.8.4"
+logging = "5.1.0"
+icons = "1.1.0"
+napier = "2.7.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -74,6 +78,10 @@ peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekaboo
 peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekaboo" }
 
 coil = {module = "io.coil-kt:coil", version.ref = "coil"}
+uuid = {module = "com.benasher44:uuid", version.ref = "uuid"}
+
+eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "icons" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 
 
 [plugins]

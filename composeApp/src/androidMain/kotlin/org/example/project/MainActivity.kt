@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import cafe.adriel.voyager.navigator.Navigator
 import org.example.project.platform.Permission
-import screen.MainScreen
 
 
 class MainActivity : ComponentActivity() {

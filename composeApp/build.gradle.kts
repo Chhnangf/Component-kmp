@@ -66,7 +66,8 @@ kotlin {
             // peekaboo-image-picker
             implementation(libs.peekaboo.image.picker)
             implementation(libs.coil)
-
+            implementation(libs.uuid)
+            implementation(libs.eva.icons)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)

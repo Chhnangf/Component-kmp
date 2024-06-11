@@ -14,12 +14,14 @@ import compose.icons.EvaIcons
 import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
 import compose.icons.evaicons.fill.BarChart
+import compose.icons.evaicons.fill.Home
 import compose.icons.evaicons.fill.Pantone
 import compose.icons.evaicons.fill.PaperPlane
 import compose.icons.evaicons.fill.Plus
 import compose.icons.evaicons.fill.PlusSquare
 import compose.icons.evaicons.fill.Settings2
 import compose.icons.evaicons.outline.BarChart
+import compose.icons.evaicons.outline.Home
 import compose.icons.evaicons.outline.Pantone
 import compose.icons.evaicons.outline.PaperPlane
 import compose.icons.evaicons.outline.Plus
@@ -35,8 +37,8 @@ import org.example.project.screen.StatisticsView
 class Routes {
     enum class BarRoute {
         Home_Screen {
-            override val imageVector: ImageVector = EvaIcons.Outline.BarChart
-            override val selectImage: ImageVector = EvaIcons.Fill.BarChart
+            override val imageVector: ImageVector = EvaIcons.Outline.Home
+            override val selectImage: ImageVector = EvaIcons.Fill.Home
             override val description: String = "首页"
             // 内部枚举表示首页的顶部Tab
 

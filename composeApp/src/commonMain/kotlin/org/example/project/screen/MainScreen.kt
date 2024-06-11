@@ -89,6 +89,29 @@ object MainScreen : Screen {
     }
 }
 
+@Composable
+fun PageOneContent() {
+    // Your content for Page One here
+    Box(modifier = Modifier.fillMaxSize().background(Color.Gray)) {
+        Text("This is Page One", modifier = Modifier.align(Alignment.Center))
+    }
+}
+
+@Composable
+fun PageTwoContent() {
+    // Your content for Page Two here
+    Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+        Text("This is Page Two", modifier = Modifier.align(Alignment.Center))
+    }
+}
+
+@Composable
+fun PageThrContent() {
+    // Your content for Page Two here
+    Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray)) {
+        Text("This is Page Thr", modifier = Modifier.align(Alignment.Center))
+    }
+}
 
 
 

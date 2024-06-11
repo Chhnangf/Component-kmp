@@ -10,6 +10,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import compose.icons.EvaIcons
+import compose.icons.evaicons.Fill
+import compose.icons.evaicons.Outline
+import compose.icons.evaicons.fill.BarChart
+import compose.icons.evaicons.fill.Pantone
+import compose.icons.evaicons.fill.PaperPlane
+import compose.icons.evaicons.fill.Plus
+import compose.icons.evaicons.fill.PlusSquare
+import compose.icons.evaicons.fill.Settings2
+import compose.icons.evaicons.outline.BarChart
+import compose.icons.evaicons.outline.Pantone
+import compose.icons.evaicons.outline.PaperPlane
+import compose.icons.evaicons.outline.Plus
+import compose.icons.evaicons.outline.PlusSquare
+import compose.icons.evaicons.outline.Settings2
 import org.example.project.data.SharedStateManager
 import org.example.project.screen.HomeView
 import org.example.project.screen.PublishScreen
@@ -20,7 +35,8 @@ import org.example.project.screen.StatisticsView
 class Routes {
     enum class BarRoute {
         Home_Screen {
-            override val imageVector: ImageVector = Icons.Default.Home
+            override val imageVector: ImageVector = EvaIcons.Outline.BarChart
+            override val selectImage: ImageVector = EvaIcons.Fill.BarChart
             override val description: String = "首页"
             // 内部枚举表示首页的顶部Tab
 
@@ -31,7 +47,8 @@ class Routes {
         },
 
         schedule_Screen {
-            override val imageVector: ImageVector = Icons.Rounded.Edit
+            override val imageVector: ImageVector = EvaIcons.Outline.PaperPlane
+            override val selectImage: ImageVector = EvaIcons.Fill.PaperPlane
             override val description: String = "日程"
             @Composable
             override fun target() {
@@ -40,7 +57,8 @@ class Routes {
         },
 
         Publish_Screen {
-            override val imageVector: ImageVector = Icons.Rounded.MoreVert
+            override val imageVector: ImageVector = EvaIcons.Outline.PlusSquare
+            override val selectImage: ImageVector = EvaIcons.Fill.PlusSquare
             override val description: String = "发布"
             @Composable
             override fun target() {
@@ -52,7 +70,8 @@ class Routes {
 
 
         statistics_Screen {
-            override val imageVector: ImageVector = Icons.Default.DateRange
+            override val imageVector: ImageVector = EvaIcons.Outline.Pantone
+            override val selectImage: ImageVector = EvaIcons.Fill.Pantone
             override val description: String = "统计"
             @Composable
             override fun target() {
@@ -61,14 +80,17 @@ class Routes {
         },
 
         Setting_Screen {
-            override val imageVector: ImageVector = Icons.Default.Person
+            override val imageVector: ImageVector = EvaIcons.Outline.Settings2
+            override val selectImage: ImageVector = EvaIcons.Fill.Settings2
             override val description: String = "个人"
             @Composable
             override fun target() {
                 SettingView()
             }
         };
+
         abstract val imageVector: ImageVector
+        abstract val selectImage: ImageVector
         abstract val description: String
         @Composable
         abstract fun target()

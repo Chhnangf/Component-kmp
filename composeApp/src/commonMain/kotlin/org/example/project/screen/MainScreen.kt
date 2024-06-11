@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import org.example.project.data.SharedStateManager
@@ -70,14 +71,14 @@ object MainScreen : Screen {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            imageVector = it.imageVector,
+                            imageVector = if (it == SharedStateManager.currentTab.value) it.selectImage else it.imageVector,
                             contentDescription = it.description,
-                            tint = if (it == SharedStateManager.currentTab.value) androidx.compose.ui.graphics.Color.Blue else androidx.compose.ui.graphics.Color.Black
+                            tint = if (it == SharedStateManager.currentTab.value) Color.Blue else Color.Black
                         )
 
                         Text(
                             text = it.description,
-                            color = if (it == SharedStateManager.currentTab.value) androidx.compose.ui.graphics.Color.Blue else androidx.compose.ui.graphics.Color.Black
+                            color = if (it == SharedStateManager.currentTab.value) Color.Blue else Color.Black
                         )
 
                     }

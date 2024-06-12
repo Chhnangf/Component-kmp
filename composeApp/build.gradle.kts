@@ -145,9 +145,14 @@ android {
 }
 
 sqldelight {
+//    databases {
+//        create("AppDatabase") {
+//            packageName.set("com.jetbrains.spacetutorial.cache")
+//        }
+//    }
     databases {
-        create("AppDatabase") {
-            packageName.set("com.jetbrains.spacetutorial.cache")
+        create("ImageDatabase") {
+            packageName.set("org.example.project.cache")
         }
     }
 }

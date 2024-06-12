@@ -16,6 +16,9 @@ import androidx.compose.runtime.setValue
 
 class PublishViewModel(private val id: Uuid = uuid4()) : ViewModel(){
 
+//    val databaseDriver = SqlDelightDatabaseDriver(AppDatabase.Schema, context)
+//    val imageDatabase = ImageDatabase(databaseDriver)
+
     // 使用mutableStateOf来封装一个可变的ByteArray列表
     var selectedImageByteArray by mutableStateOf(mutableListOf<ByteArray>()) // 可直接读写
 

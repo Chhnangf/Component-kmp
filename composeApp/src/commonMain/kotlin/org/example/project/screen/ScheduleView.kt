@@ -72,5 +72,10 @@ fun ScheduleView() {
     }
 }
 
+@Composable
+fun TabContent(tab: Routes.TabRoute) {
+    // 根据tab展示对应内容，这里仅为示例，实际应映射到具体屏幕或内容
+    androidx.compose.material.Text(text = "Content for ${tab.name}")
+}
 
 

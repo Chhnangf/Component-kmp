@@ -59,7 +59,7 @@ class Routes {
         },
 
         Publish_Screen {
-            override val imageVector: ImageVector = EvaIcons.Outline.PlusSquare
+            override val imageVector: ImageVector = EvaIcons.Fill.PlusSquare
             override val selectImage: ImageVector = EvaIcons.Fill.PlusSquare
             override val description: String = "发布"
             @Composable

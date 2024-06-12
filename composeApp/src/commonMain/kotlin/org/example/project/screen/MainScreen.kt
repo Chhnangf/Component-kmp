@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
@@ -17,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import org.example.project.data.SharedStateManager
 import org.example.project.data.navigation.Routes
@@ -53,7 +56,8 @@ object MainScreen : Screen {
         ) {
             // 4 * Button
             Row(
-                modifier = Modifier.fillMaxWidth().padding(20.dp, 6.dp, 20.dp, 6.dp),
+                modifier = Modifier.fillMaxWidth().padding(20.dp, 6.dp, 20.dp, 6.dp)
+                ,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
@@ -62,12 +66,13 @@ object MainScreen : Screen {
 
                     Column(
                         modifier = Modifier.clickable(
-                            onClick = {
-                                SharedStateManager.update(it)
-                            },
+                            onClick = { SharedStateManager.update(it) },
                             indication = null,
                             interactionSource = MutableInteractionSource()
-                        ),
+                        )
+//                            .background(if (it.description == "发布") Color.Red else Color.Transparent)
+//                            .clip(RoundedCornerShape(24.dp))
+                        ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
@@ -78,6 +83,7 @@ object MainScreen : Screen {
 
                         Text(
                             text = it.description,
+                            fontSize = 11.sp,
                             color = if (it == SharedStateManager.currentTab.value) Color.Blue else Color.Black
                         )
 
@@ -88,31 +94,5 @@ object MainScreen : Screen {
         }
     }
 }
-
-@Composable
-fun PageOneContent() {
-    // Your content for Page One here
-    Box(modifier = Modifier.fillMaxSize().background(Color.Gray)) {
-        Text("This is Page One", modifier = Modifier.align(Alignment.Center))
-    }
-}
-
-@Composable
-fun PageTwoContent() {
-    // Your content for Page Two here
-    Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
-        Text("This is Page Two", modifier = Modifier.align(Alignment.Center))
-    }
-}
-
-@Composable
-fun PageThrContent() {
-    // Your content for Page Two here
-    Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray)) {
-        Text("This is Page Thr", modifier = Modifier.align(Alignment.Center))
-    }
-}
-
-
 
 

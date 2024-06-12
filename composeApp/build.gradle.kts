@@ -14,10 +14,10 @@ plugins {
 
 kotlin {
 
-    compilerOptions {
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-    }
+//    compilerOptions {
+//        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+//        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+//    }
 
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -62,12 +62,15 @@ kotlin {
 
             // peekaboo-ui
             implementation(libs.peekaboo.ui)
-
             // peekaboo-image-picker
             implementation(libs.peekaboo.image.picker)
-            implementation(libs.coil)
+
             implementation(libs.uuid)
             implementation(libs.eva.icons)
+
+            // https://github.com/alexzhirkevich/compottie
+            implementation(libs.lottie.kmp)
+
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
@@ -83,7 +86,10 @@ kotlin {
             implementation(libs.voyager.hilt)
 
             implementation("androidx.activity:activity-compose:1.7.2")
+            implementation("io.coil-kt:coil:2.6.0")
             implementation("io.coil-kt:coil-compose:2.6.0")
+
+
 
         }
         iosMain.dependencies {

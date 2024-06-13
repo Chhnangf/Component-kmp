@@ -1,21 +1,29 @@
 package screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +33,11 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.preat.peekaboo.image.picker.SelectionMode
+import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
+import com.preat.peekaboo.image.picker.toImageBitmap
+import com.preat.peekaboo.ui.camera.PeekabooCamera
+import com.preat.peekaboo.ui.camera.rememberPeekabooCameraState
 import io.ktor.http.Url
 import io.ktor.util.logging.Logger
 import org.example.project.common.ImagePicker
@@ -37,10 +50,24 @@ class PublishScreen : Screen {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PublishView() {
     val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
     var showImageSelector by remember { mutableStateOf(false) }
+    var selectedImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
+
+    val scope = rememberCoroutineScope()
+    val singleImagePicker = rememberImagePickerLauncher(
+        selectionMode = SelectionMode.Single,
+        scope = scope,
+        onResult = { byteArrays ->
+            byteArrays.firstOrNull()?.let {
+                // Process the selected images' ByteArrays.
+                selectedImageByteArray = it
+            }
+        }
+    )
 
     Scaffold(
         topBar = {
@@ -58,54 +85,164 @@ fun PublishView() {
         },
         content = {
             Surface(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable {
-                            showImageSelector = true
-                        }
+                Box {
+                    Column(
+                        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            Icons.Default.Face,
-                            contentDescription = "选择图片",
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("点击选择图片", color = Color.Blue)
+                        val sheetState = androidx.compose.material3.rememberModalBottomSheetState()
+                        var showBottomSheet by remember { mutableStateOf(false) }
+                       Button(onClick = { showBottomSheet = true }) {
+                            Text("Camera")
+                        }
+
+                        Button(onClick = { singleImagePicker.launch() }) {
+                            Text("Select Image")
+                        }
+
+                        showImagePicker(selectedImageByteArray)
+
+                        if (showBottomSheet) {
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    showBottomSheet = false
+                                },
+                                sheetState = sheetState
+                            ) {
+                                Box {
+                                    // Sheet content
+                                    CustomCameraView()
+                                }
+                            }
+                        }
+
                     }
-//                    if (imageUri != null) {
-//                        AsyncImage(model = imageUri, contentDescription = "预览图片")
-//                            .modifier(Height(200.dp))
-//                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    TextField(
-                        value = "viewModel.postContent.value",
-                        onValueChange = {
-                            //viewModel.onContentChange(it)
-                        },
-                        placeholder = { Text("分享你的想法...") },
-                        maxLines = Int.MAX_VALUE,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { /* 提交表单的逻辑 */ }),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { /* 发布帖子的逻辑 */ }) {
-                        Text(text = "发布")
-                    }
+
                 }
-            }
-            if (showImageSelector) {
-                // ImagePicker.pickImage()
             }
         }
 
     )
+}
+
+@Composable
+fun showImagePicker(byteArray: ByteArray?) {
+    Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+        byteArray?.let { byteArray ->
+            // Convert ByteArray to ImageBitmap for display
+            val imageBitmap = byteArray.toImageBitmap()
+            Image(
+                bitmap = imageBitmap,
+                contentDescription = "Selected Image",
+                modifier = Modifier.fillMaxSize(), // Adjust modifiers as needed
+            )
+        }
+    }
+
+}
+@Composable
+fun singleImagePicker() {
+    val scope = rememberCoroutineScope()
+    var selectedImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
+
+    val singleImagePicker = rememberImagePickerLauncher(
+        selectionMode = SelectionMode.Single,
+        scope = scope,
+        onResult = { byteArrays ->
+            byteArrays.firstOrNull()?.let {
+                // Process the selected images' ByteArrays.
+                selectedImageByteArray = it
+            }
+        }
+    )
+    Box {
+        Column(modifier = Modifier.fillMaxSize()) {
+            selectedImageByteArray?.let { byteArray ->
+                // Convert ByteArray to ImageBitmap for display
+                val imageBitmap = byteArray.toImageBitmap()
+                Image(
+                    bitmap = imageBitmap,
+                    contentDescription = "Selected Image",
+                    modifier = Modifier.fillMaxSize(), // Adjust modifiers as needed
+                )
+            }
+//         图片选择按钮
+            Button(onClick = { singleImagePicker.launch() }) {
+                Text("Select Image")
+            }
+        }
+
+    }
+}
+
+@Composable
+fun CustomCameraView() {
+    val state = rememberPeekabooCameraState(onCapture = { /* Handle captured images */ })
+    var showPickImage by remember { mutableStateOf(false) }
+    Box {
+        Column {
+            PeekabooCamera(
+                state = state,
+                modifier = Modifier.fillMaxSize(),
+                permissionDeniedContent = {
+                    // Custom UI content for permission denied scenario
+                },
+            )
+            // Draw here UI you need with provided state
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        // New Row containing the buttons, floating above the Column
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter) // Align the row at the bottom center of the Box
+                .padding(bottom = 16.dp), // Optional padding from the bottom edge
+            horizontalArrangement = Arrangement.SpaceEvenly // Space buttons evenly
+        ) {
+            Button(onClick = {
+                /* Handle display image action */
+                showPickImage = true
+            }) {
+                Text("图片")
+            }
+            Button(onClick = {
+            /* Call your capture function here */
+                state.capture()
+            }) {
+                Text("拍照")
+            }
+            Button(onClick = {
+            /* Call toggle camera function here */
+                state.toggleCamera()
+            }) {
+                Text("反转")
+            }
+        }
+        if (showPickImage) {
+            singleImagePicker()
+        }
+
+
+    }
 
 
 }
 
+@Composable
+fun multipleImagePicker() {
+    val scope = rememberCoroutineScope()
+    val multipleImagePicker = rememberImagePickerLauncher(
+        // Optional: Set a maximum selection limit, e.g., SelectionMode.Multiple(maxSelection = 5).
+        // Default: No limit, depends on system's maximum capacity.
+        selectionMode = SelectionMode.Multiple(maxSelection = 5),
+        scope = scope,
+        onResult = { byteArrays ->
+            byteArrays.forEach {
+                // Process the selected images' ByteArrays.
+                println(it)
+            }
+        }
+    )
+}

@@ -38,101 +38,12 @@ fun ScheduleView() {
     horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
 
-        val sheetState = rememberModalBottomSheetState()
-        var showBottomSheet by remember { mutableStateOf(false) }
-        Button(onClick = {showBottomSheet = true}) {
-            Text("拍照")
-        }
-        singleImagePicker()
 
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-                sheetState = sheetState
-            ) {
-                // Sheet content
-                CustomCameraView()
-            }
-        }
     }
 
 }
 
-@Composable
-fun singleImagePicker() {
-    val scope = rememberCoroutineScope()
-    var selectedImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
-
-    val singleImagePicker = rememberImagePickerLauncher(
-        selectionMode = SelectionMode.Single,
-        scope = scope,
-        onResult = { byteArrays ->
-            byteArrays.firstOrNull()?.let {
-                // Process the selected images' ByteArrays.
-                selectedImageByteArray = it
-            }
-        }
-    )
-
-    Column (modifier = Modifier.fillMaxSize()) {
-        selectedImageByteArray?.let { byteArray ->
-            // Convert ByteArray to ImageBitmap for display
-            val imageBitmap = byteArray.toImageBitmap()
-            Image(
-                bitmap = imageBitmap,
-                contentDescription = "Selected Image",
-                modifier = Modifier.fillMaxSize(), // Adjust modifiers as needed
-            )
-        }
 
 
-//         图片选择按钮
-        Button(onClick = { singleImagePicker.launch() }) {
-            Text("Select Image")
-        }
-    }
-}
 
-@Composable
-fun multipleImagePicker() {
-    val scope = rememberCoroutineScope()
 
-    val multipleImagePicker = rememberImagePickerLauncher(
-        // Optional: Set a maximum selection limit, e.g., SelectionMode.Multiple(maxSelection = 5).
-        // Default: No limit, depends on system's maximum capacity.
-        selectionMode = SelectionMode.Multiple(maxSelection = 5),
-        scope = scope,
-        onResult = { byteArrays ->
-            byteArrays.forEach {
-                // Process the selected images' ByteArrays.
-                println(it)
-            }
-        }
-    )
-
-    Button(
-        onClick = {
-            multipleImagePicker.launch()
-        }
-    ) {
-        Text("Pick Multiple Images")
-    }
-}
-
-@Composable
-fun CustomCameraView() {
-    val state = rememberPeekabooCameraState(onCapture = { /* Handle captured images */ })
-    Box(modifier = Modifier.fillMaxSize()) {
-        PeekabooCamera(
-            state = state,
-            modifier = Modifier.fillMaxSize(),
-            permissionDeniedContent = {
-                // Custom UI content for permission denied scenario
-            },
-        )
-        // Draw here UI you need with provided state
-
-    }
-}

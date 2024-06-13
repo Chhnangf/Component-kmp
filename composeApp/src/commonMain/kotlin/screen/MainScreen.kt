@@ -28,14 +28,12 @@ import org.example.project.data.navigation.Routes
 
 
 object MainScreen : Screen {
-    private var selectedTabIndex by mutableStateOf(0) // 假设默认选中第一个标签
 
     @Composable
     override fun Content() {
 
         Surface {
             Column {
-                HeaderBar(selectedTabIndex)
 
                 Box(
                     modifier = Modifier.fillMaxSize().weight(1f)
@@ -95,12 +93,6 @@ object MainScreen : Screen {
 }
 
 
-@Composable
-fun HeaderBar(selectedTabIndex: Int, )
-{
-    val currentTabColor = Color.Blue
-    val unselectedTabColor = Color.Black
-}
 
 
 

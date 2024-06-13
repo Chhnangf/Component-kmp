@@ -1,6 +1,7 @@
 package screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
@@ -10,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -27,7 +29,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -55,7 +59,7 @@ class PublishScreen : Screen {
 fun PublishView() {
     val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
     var showImageSelector by remember { mutableStateOf(false) }
-    var selectedImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
+    var selectedImageByteArray by remember { mutableStateOf<List<ByteArray>>(emptyList()) }
 
     val scope = rememberCoroutineScope()
     val singleImagePicker = rememberImagePickerLauncher(
@@ -64,7 +68,7 @@ fun PublishView() {
         onResult = { byteArrays ->
             byteArrays.firstOrNull()?.let {
                 // Process the selected images' ByteArrays.
-                selectedImageByteArray = it
+                selectedImageByteArray = listOf(it)
             }
         }
     )
@@ -125,22 +129,37 @@ fun PublishView() {
 
     )
 }
+@Composable
+fun ImageItem(bitmap: ByteArray) {
+    Box(
+        Modifier
+            .size(80.dp) // 设定每个图片格子的大小为正方形
+            .aspectRatio(1f) // 保持图片为正方形
+            .clip(RoundedCornerShape(6.dp)) // 可选，为图片添加圆角
+            .background(Color.LightGray) // 可选，为图片背景着色
+    ) {
+        Image(
+            bitmap = bitmap.toImageBitmap(),
+            contentDescription = "Selected Image",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop // 或者 ContentScale.Fit 如果不希望裁剪图片
+        )
+    }
+}
 
 @Composable
-fun showImagePicker(byteArray: ByteArray?) {
-    Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
-        byteArray?.let { byteArray ->
-            // Convert ByteArray to ImageBitmap for display
-            val imageBitmap = byteArray.toImageBitmap()
-            Image(
-                bitmap = imageBitmap,
-                contentDescription = "Selected Image",
-                modifier = Modifier.fillMaxSize(), // Adjust modifiers as needed
-            )
+fun showImagePicker(byteArrayList: List<ByteArray?>) {
+    Row(modifier = Modifier.horizontalScroll(rememberScrollState()).height(50.dp)) {
+        byteArrayList.forEach {byteArray ->
+            byteArray?.let { byteArray ->
+                // Convert ByteArray to ImageBitmap for display
+                ImageItem(byteArray)
+            }
         }
-    }
 
+    }
 }
+
 @Composable
 fun singleImagePicker() {
     val scope = rememberCoroutineScope()

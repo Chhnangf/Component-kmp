@@ -11,7 +11,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.example.project.data.SharedStateManager
+import org.example.project.data.navigation.Routes.BarRoute.Home_Screen
 import screen.HomeView
+import screen.PublishNesting
 import screen.PublishScreen
 import screen.ScheduleView
 import screen.SettingView
@@ -50,6 +52,18 @@ class Routes {
             }
         },
 
+        Publish_SelectImage_Screen {
+            override val imageVector: ImageVector = Icons.Rounded.MoreVert
+            override val description: String = "发布"
+            @Composable
+            override fun target() {
+                val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
+                navigator.push(PublishScreen())
+                SharedStateManager.currentTab.value = Home_Screen
+            }
+        },
+
+
         statistics_Screen {
             override val imageVector: ImageVector = Icons.Default.DateRange
             override val description: String = "统计"
@@ -79,5 +93,20 @@ class Routes {
         Find_Screen("发现"),
         Game_Screen("游戏"),
         Music_Screen("音乐")
+    }
+
+    enum class PublishNesting() {
+        Publish_Image_Screen {
+            @Composable
+            override fun target() {
+                val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
+                navigator.push(screen.PublishNesting())
+                SharedStateManager.currentTab.value = BarRoute.Publish_Screen
+            }
+        };
+
+        @Composable
+        abstract fun target()
+
     }
 }

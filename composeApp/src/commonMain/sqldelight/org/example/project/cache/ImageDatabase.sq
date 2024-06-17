@@ -4,7 +4,7 @@ CREATE TABLE Images (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     data BLOB NOT NULL,
     -- 可以根据需要添加其他列，如时间戳、描述等
-    created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 插入图片数据

@@ -6,6 +6,6 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 
 class AndroidDatabaseDriverFactory(private val context: Context) : DatabaseDriverFactory {
     override fun createDriver(): SqlDriver {
-        return AndroidSqliteDriver(ImageDatabase.Schema, context, "launch.db")
+        return AndroidSqliteDriver(ImageDatabase.Schema, context, "Images.db")
     }
 }

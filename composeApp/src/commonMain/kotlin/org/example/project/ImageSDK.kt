@@ -4,7 +4,7 @@ import org.example.project.cache.Database
 import org.example.project.cache.DatabaseDriverFactory
 import org.example.project.data.ImageEntity
 
-class ImageSDK(databaseDriverFactory: DatabaseDriverFactory) {
+class ImageSDK(val databaseDriverFactory: DatabaseDriverFactory) {
     private val database = Database(databaseDriverFactory)
 
     fun insertImage(imageData: ByteArray) {

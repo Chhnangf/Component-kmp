@@ -17,7 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,90 +40,90 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import com.preat.peekaboo.image.picker.toImageBitmap
+import org.example.project.ImageSDK
+import org.example.project.data.ImageEntity
 import org.example.project.viewmodel.PublishViewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
- class PublishScreen() : Screen {
+class PublishScreen() : Screen, KoinComponent {
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        PublishView()
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PublishView() {
-    val viewModel = PublishViewModel()
-    val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
-
-    /**
-     * 从viewModel中获取图片
-     */
-    var selectedImageByteArray = viewModel.getImageByteArrays()//by remember { mutableStateOf<List<ByteArray>>(emptyList()) }
-
-    println("selectedImageByteArray： ${selectedImageByteArray}")
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "发布新帖") },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        // 这里应该是导航回到上一屏的逻辑，如果你使用的是 androidx.navigation，则通常是
-                        navigator.pop()
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
-                    }
-                },
-            )
+        val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
+        val imageSDK: ImageSDK = getKoin().get()
+        val images = remember { mutableStateListOf<ImageEntity>() }
+        // 使用 LaunchedEffect 来执行初始化逻辑
+        LaunchedEffect(Unit) {
+            // 假设 imageSDK.getAllImages() 是一个同步方法
+//            images.clear()
+            images.addAll(imageSDK.getAllImages())
         }
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = "发布新帖") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            // 这里应该是导航回到上一屏的逻辑，如果你使用的是 androidx.navigation，则通常是
+                            navigator.pop()
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                        }
+                    },
+                )
+            }
 
-    ) {
-
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Box {
-                Column(
-                    modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val sheetState = androidx.compose.material3.rememberModalBottomSheetState()
-
-
-                    Row(
-                        modifier = Modifier.horizontalScroll(rememberScrollState()).fillMaxWidth()
-                            .height(100.dp).padding(end = 10.dp),
-                        horizontalArrangement = Arrangement.Start
+        ) {
+            Surface(modifier = Modifier.fillMaxSize()) {
+                Box {
+                    Column(
+                        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        val sheetState = androidx.compose.material3.rememberModalBottomSheetState()
 
-                        ShowImagePicker(selectedImageByteArray)
 
-                        Spacer(Modifier.width(10.dp))
-                        // 打开相机
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add Image",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .clickable {
-                                    //showBottomSheet = true
-                                    navigator.push(PublishImageScreen(viewModel))
-                                    //ImagePicker.launch()
-                                }
-                                .size(80.dp).aspectRatio(1f).clip(RoundedCornerShape(6.dp))
-                                .background(Color.LightGray).alpha(0.1f),
-                        )
+                        Row(
+                            modifier = Modifier.horizontalScroll(rememberScrollState()).fillMaxWidth()
+                                .height(100.dp).padding(end = 10.dp),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // 显示照片
+                            ShowImagePicker(images)
+
+                            Spacer(Modifier.width(10.dp))
+                            // 打开相机
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add Image",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .clickable {
+                                        //showBottomSheet = true
+                                        navigator.push(PublishImageScreen())
+                                        //ImagePicker.launch()
+                                    }
+                                    .size(80.dp).aspectRatio(1f).clip(RoundedCornerShape(6.dp))
+                                    .background(Color.LightGray).alpha(0.1f),
+                            )
+                        }
+
+                        CreationField()
+
                     }
 
-                    CreationField()
 
                 }
-
-
             }
         }
     }
 }
+
+
 
 @Composable
 fun ImageItem(bitmap: ByteArray) {
@@ -142,11 +144,11 @@ fun ImageItem(bitmap: ByteArray) {
 }
 
 @Composable
-fun ShowImagePicker(byteArrayList: List<ByteArray?>) {
-        byteArrayList.forEach { byteArray ->
-            byteArray?.let { byteArray ->
+fun ShowImagePicker(byteArrayList: List<ImageEntity?>) {
+        byteArrayList.forEach { imageEntity ->
+            imageEntity?.let { imageEntity ->
                 // Convert ByteArray to ImageBitmap for display
-                ImageItem(byteArray)
+                ImageItem(imageEntity.data)
             }
         }
 }

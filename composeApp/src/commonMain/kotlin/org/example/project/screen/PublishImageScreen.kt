@@ -31,9 +31,15 @@ import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import com.preat.peekaboo.ui.camera.PeekabooCamera
 import com.preat.peekaboo.ui.camera.rememberPeekabooCameraState
+import org.example.project.ImageSDK
+import org.example.project.cache.Database
 import org.example.project.viewmodel.PublishViewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.loadKoinModules
 
-data class PublishImageScreen(val viewModel: PublishViewModel) : Screen{
+class PublishImageScreen() : Screen, KoinComponent {
+
     @Composable
     override fun Content() {
         //PublishImageView(viewModel)
@@ -41,6 +47,8 @@ data class PublishImageScreen(val viewModel: PublishViewModel) : Screen{
 
         val scope = rememberCoroutineScope()
 
+        // 延迟注入依赖项，适用于需要延迟初始化的情况
+        val imageSDK: ImageSDK by lazy { getKoin().get() }
 //        fun onImageCaptured(byteArray: ByteArray) {
 //            viewModel.addImageByteArray(listOf(byteArray))
 //            println("Image captured. Size: ${byteArray.size} bytes")
@@ -50,11 +58,13 @@ data class PublishImageScreen(val viewModel: PublishViewModel) : Screen{
             selectionMode = SelectionMode.Multiple(5),
             scope = scope,
             onResult = { byteArrays ->
+
                 // 直接将所有选中的图片 ByteArray 赋值给状态变量，无需使用 firstOrNull?.let 或 forEach 循环
                 // selectedImageByteArray = byteArrays.toList().toMutableList()
-                viewModel.addImageByteArray(byteArrays)
+                //viewModel.addImageByteArray(byteArrays)
                 // 可以在这里添加处理选中图片的逻辑，比如打印出来验证
                 byteArrays.forEach { byteArray ->
+                    imageSDK.insertImage(byteArray)
                     println(byteArray.contentToString())
                 }
             }

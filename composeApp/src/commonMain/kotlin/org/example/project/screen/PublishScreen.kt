@@ -18,12 +18,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -33,35 +30,23 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.preat.peekaboo.image.picker.SelectionMode
-import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import com.preat.peekaboo.image.picker.toImageBitmap
-import org.example.project.ImageSDK
+import org.example.project.sdk.SpaceXSDK
 import org.example.project.data.ImageEntity
-import org.example.project.viewmodel.PublishViewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-
 
 class PublishScreen() : Screen, KoinComponent {
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-
-
         val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
-        val imageSDK: ImageSDK = getKoin().get()
+        val imageSDK: SpaceXSDK = getKoin().get()
         val images = remember { mutableStateListOf<ImageEntity>() }
         // 使用 LaunchedEffect 来执行初始化逻辑
         LaunchedEffect(Unit) {
-            // 假设 imageSDK.getAllImages() 是一个同步方法
-//            images.clear()
-            images.addAll(imageSDK.getAllImages())
         }
 
 

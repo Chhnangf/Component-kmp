@@ -150,7 +150,7 @@ sqldelight {
 //        }
 //    }
     databases {
-        create("ImageDatabase") {
+        create("AppDatabase") {
             packageName.set("org.example.project.cache")
         }
     }

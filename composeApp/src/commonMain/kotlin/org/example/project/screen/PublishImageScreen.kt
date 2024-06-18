@@ -31,12 +31,9 @@ import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import com.preat.peekaboo.ui.camera.PeekabooCamera
 import com.preat.peekaboo.ui.camera.rememberPeekabooCameraState
-import org.example.project.ImageSDK
-import org.example.project.cache.Database
+import org.example.project.sdk.SpaceXSDK
 import org.example.project.viewmodel.PublishViewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.context.loadKoinModules
 
 class PublishImageScreen() : Screen, KoinComponent {
 
@@ -48,7 +45,7 @@ class PublishImageScreen() : Screen, KoinComponent {
         val scope = rememberCoroutineScope()
 
         // 延迟注入依赖项，适用于需要延迟初始化的情况
-        val imageSDK: ImageSDK by lazy { getKoin().get() }
+        val imageSDK: SpaceXSDK by lazy { getKoin().get() }
 //        fun onImageCaptured(byteArray: ByteArray) {
 //            viewModel.addImageByteArray(listOf(byteArray))
 //            println("Image captured. Size: ${byteArray.size} bytes")
@@ -64,7 +61,6 @@ class PublishImageScreen() : Screen, KoinComponent {
                 //viewModel.addImageByteArray(byteArrays)
                 // 可以在这里添加处理选中图片的逻辑，比如打印出来验证
                 byteArrays.forEach { byteArray ->
-                    imageSDK.insertImage(byteArray)
                     println(byteArray.contentToString())
                 }
             }

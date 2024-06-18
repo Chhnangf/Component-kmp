@@ -1,6 +1,5 @@
 package org.example.project
 
-import App
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            App()
+            AndroidApp()
         }
     }
 

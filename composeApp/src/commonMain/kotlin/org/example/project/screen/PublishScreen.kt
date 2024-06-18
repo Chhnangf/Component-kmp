@@ -46,11 +46,13 @@ import org.example.project.viewmodel.PublishViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+
 class PublishScreen() : Screen, KoinComponent {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
+
 
         val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
         val imageSDK: ImageSDK = getKoin().get()
@@ -61,6 +63,9 @@ class PublishScreen() : Screen, KoinComponent {
 //            images.clear()
             images.addAll(imageSDK.getAllImages())
         }
+
+
+
         Scaffold(
             topBar = {
                 TopAppBar(

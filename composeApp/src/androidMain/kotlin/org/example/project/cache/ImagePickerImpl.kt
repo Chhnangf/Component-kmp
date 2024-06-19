@@ -5,18 +5,22 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-actual class ImagePickerImpl(private val contentResolver: ContentResolver): ImagePicker {
+import java.io.File
+import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.asImageBitmap
+
+actual class ImagePickerImpl(private val contentResolver: ContentResolver) : ImagePicker {
 
     actual override suspend fun fetchImages(): List<String> {
         return withContext(Dispatchers.IO) {
-            fetchImagePaths(contentResolver)
+            fetchImagePaths()
         }
     }
 
-    private fun fetchImagePaths(contentResolver: ContentResolver): List<String> {
-
+    private fun fetchImagePaths(): List<String> {
         val projection = arrayOf(
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DATA
@@ -24,29 +28,44 @@ actual class ImagePickerImpl(private val contentResolver: ContentResolver): Imag
         val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
         val imagePaths = mutableListOf<String>()
+        val dataColumnIndex = projection.indexOf(MediaStore.Images.Media.DATA)
 
-        var cursor: Cursor? = null
-        try {
-            cursor = contentResolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                projection,
-                null,
-                null,
-                sortOrder
-            )
-
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                    val imagePath = cursor.getString(dataColumnIndex)
-                    imagePaths.add(imagePath)
-                } while (cursor.moveToNext())
+        contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            null,
+            null,
+            sortOrder
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val imagePath = cursor.getString(dataColumnIndex)
+                imagePaths.add(imagePath)
             }
-            imagePaths
-        } finally {
-            cursor?.close()
         }
+
         return imagePaths
     }
+}
+
+actual fun CreateImagePicker(): ImagePickerImpl {
+    val appContext: Context = AndroidContents.localContext!!
+    val contentResolver: ContentResolver = appContext.contentResolver
+    return ImagePickerImpl(contentResolver)
+}
+
+actual class ImageLoader () {
+    actual suspend fun load(imagePath: String): ImageBitmap {
+        // 使用 Android 的 API 加载图片
+        val file = File(imagePath)
+        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+        return bitmap.asImageBitmap()
+    }
+
+    companion object {
+        fun create(): ImageLoader = ImageLoader()
+    }
+}
+
+actual fun CreateImageLoader(): ImageLoader {
+    return ImageLoader()
 }

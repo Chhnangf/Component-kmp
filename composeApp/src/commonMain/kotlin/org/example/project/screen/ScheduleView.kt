@@ -1,12 +1,15 @@
 package org.example.project.screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -18,12 +21,17 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +44,14 @@ import compose.icons.evaicons.outline.Headphones
 import compose.icons.evaicons.outline.Info
 import compose.icons.evaicons.outline.Monitor
 import compose.icons.evaicons.outline.Radio
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.example.project.cache.CreateImageLoader
+import org.example.project.cache.CreateImagePicker
+import org.example.project.cache.ImageLoader
+import org.example.project.cache.ImagePickerImpl
 import org.example.project.data.navigation.Routes
 
 
@@ -75,7 +90,51 @@ fun ScheduleView() {
 @Composable
 fun TabContent(tab: Routes.TabRoute) {
     // 根据tab展示对应内容，这里仅为示例，实际应映射到具体屏幕或内容
-    androidx.compose.material.Text(text = "Content for ${tab.name}")
+    val imagePickerImpl = CreateImagePicker()
+    var images by remember { mutableStateOf<List<String>>(emptyList()) }
+
+
+    // 使用工厂函数来实例化 ImageLoader
+    val imageLoader = CreateImageLoader()
+
+    LaunchedEffect(key1 = Unit) {
+        images = withContext(Dispatchers.IO) {
+            imagePickerImpl.fetchImages()
+        }
+    }
+
+    LazyColumn {
+        items(images) { imagePath ->
+            val imageBitmap by rememberImagePainter(imagePath, imageLoader)
+            imageBitmap?.let {
+                Image(
+                    bitmap = it,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .padding(8.dp)
+                )
+            }
+        }
+    }
 }
 
+@Composable
+private fun rememberImagePainter(imagePath: String, imageLoader: ImageLoader): State<ImageBitmap?> {
+    // 使用 remember 和 LaunchedEffect 来加载和更新图片
+    return remember(imagePath) {
+        mutableStateOf<ImageBitmap?>(null)
+    }.apply {
+        LaunchedEffect(imagePath) {
+            try {
+                val bitmap = withContext(Dispatchers.IO) {
+                    imageLoader.load(imagePath)
+                }
+                value = bitmap
+            } catch (e: Exception) {
+                // 处理异常，例如设置一个错误图片或记录日志
+            }
+        }
+    }
+}
 

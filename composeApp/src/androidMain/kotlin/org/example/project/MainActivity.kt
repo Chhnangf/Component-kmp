@@ -1,6 +1,7 @@
 package org.example.project
 
 import App
+import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log

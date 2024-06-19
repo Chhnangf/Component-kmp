@@ -6,6 +6,6 @@ import org.example.project.screen.MainScreen
 @Composable
 fun App() {
     MaterialTheme {
-
+        Navigator(MainScreen)
     }
 }

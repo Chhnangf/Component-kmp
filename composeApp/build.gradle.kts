@@ -70,13 +70,16 @@ kotlin {
             // https://github.com/alexzhirkevich/compottie
             implementation(libs.lottie.kmp)
 
+            // Viewmodel support for Compose multiplatform
+            implementation(libs.lifecycle.viewmodel.compose)
+
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
             implementation(libs.android.driver)
             implementation(libs.androidx.compose.material3)
             implementation(libs.koin.androidx.compose)
-            implementation(libs.androidx.lifecycle.viewmodel.compose)
+
 
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)

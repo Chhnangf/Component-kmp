@@ -8,19 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import org.example.project.viewmodel.SpaceXLaunchHistory
 
 @Composable
 fun StatisticsView() {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Top,
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Welcome to the StatisticsView!",
-            fontSize = 24.sp,
-            color = Color.Black,
-            textAlign = TextAlign.Center
-        )
+        SpaceXLaunchHistory()
     }
 }

@@ -44,61 +44,61 @@ fun AndroidApp() {
         pullToRefreshState.endRefresh()
     }
     Navigator(MainScreen)
-    Scaffold(
-        topBar = {
-            TopAppBar(title = {
-                Text(
-                    "SpaceX Launches",
-                    style = MaterialTheme.typography.headlineLarge
-                )
-            })
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .nestedScroll(pullToRefreshState.nestedScrollConnection)
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            if (state.isLoading) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("Loading...", style = MaterialTheme.typography.bodyLarge)
-                }
-            } else {
-                LazyColumn {
-                    items(state.launches) { launch: RocketLaunch ->
-                        Column(modifier = Modifier.padding(all = 16.dp)) {
-                            Text(
-                                text = "${launch.missionName} - ${launch.launchYear}",
-                                style = MaterialTheme.typography.headlineSmall
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = if (launch.launchSuccess == true) "Successful" else "Unsuccessful",
-                                color = if (launch.launchSuccess == true) app_theme_successful else app_theme_unsuccessful
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            val details = launch.details
-                            if (details?.isNotBlank() == true) {
-                                Text(
-                                    text = details
-                                )
-                            }
-                        }
-                        HorizontalDivider()
-                    }
-                }
-            }
-
-            PullToRefreshContainer(
-                state = pullToRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-        }
-    }
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(title = {
+//                Text(
+//                    "SpaceX Launches",
+//                    style = MaterialTheme.typography.headlineLarge
+//                )
+//            })
+//        }
+//    ) { padding ->
+//        Box(
+//            modifier = Modifier
+//                .nestedScroll(pullToRefreshState.nestedScrollConnection)
+//                .fillMaxSize()
+//                .padding(padding)
+//        ) {
+//            if (state.isLoading) {
+//                Column(
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    modifier = Modifier.fillMaxSize()
+//                ) {
+//                    Text("Loading...", style = MaterialTheme.typography.bodyLarge)
+//                }
+//            } else {
+//                LazyColumn {
+//                    items(state.launches) { launch: RocketLaunch ->
+//                        Column(modifier = Modifier.padding(all = 16.dp)) {
+//                            Text(
+//                                text = "${launch.missionName} - ${launch.launchYear}",
+//                                style = MaterialTheme.typography.headlineSmall
+//                            )
+//                            Spacer(Modifier.height(8.dp))
+//                            Text(
+//                                text = if (launch.launchSuccess == true) "Successful" else "Unsuccessful",
+//                                color = if (launch.launchSuccess == true) app_theme_successful else app_theme_unsuccessful
+//                            )
+//                            Spacer(Modifier.height(8.dp))
+//                            val details = launch.details
+//                            if (details?.isNotBlank() == true) {
+//                                Text(
+//                                    text = details
+//                                )
+//                            }
+//                        }
+//                        HorizontalDivider()
+//                    }
+//                }
+//            }
+//
+//            PullToRefreshContainer(
+//                state = pullToRefreshState,
+//                modifier = Modifier.align(Alignment.TopCenter)
+//            )
+//        }
+//    }
 
 }

@@ -8,10 +8,10 @@ class MainApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         // Initialize Koin here
-        startKoin {
-            androidContext(this@MainApplication)
-            modules(appModule)
-
-        }
+//        startKoin {
+//            androidContext(this@MainApplication)
+//            modules(appModule)
+//
+//        }
     }
 }

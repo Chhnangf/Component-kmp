@@ -43,11 +43,6 @@ class PublishScreen() : Screen, KoinComponent {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
-        val imageSDK: SpaceXSDK = getKoin().get()
-        val images = remember { mutableStateListOf<ImageEntity>() }
-        // 使用 LaunchedEffect 来执行初始化逻辑
-        LaunchedEffect(Unit) {
-        }
 
 
 
@@ -83,7 +78,7 @@ class PublishScreen() : Screen, KoinComponent {
                             horizontalArrangement = Arrangement.Start
                         ) {
                             // 显示照片
-                            ShowImagePicker(images)
+                            //ShowImagePicker()
 
                             Spacer(Modifier.width(10.dp))
                             // 打开相机

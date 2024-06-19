@@ -1,10 +1,12 @@
 package org.example.project
 
+import App
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import org.example.project.cache.AndroidContents
 import org.example.project.platform.Permission
 
 
@@ -13,7 +15,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AndroidApp()
+            AndroidContents.localContext = this
+            App()
         }
     }
 

@@ -61,9 +61,6 @@ actual class ImageLoader () {
         return bitmap.asImageBitmap()
     }
 
-    companion object {
-        fun create(): ImageLoader = ImageLoader()
-    }
 }
 
 actual fun CreateImageLoader(): ImageLoader {

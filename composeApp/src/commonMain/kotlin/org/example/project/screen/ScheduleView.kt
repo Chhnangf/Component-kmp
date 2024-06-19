@@ -89,14 +89,12 @@ fun ScheduleView() {
 
 @Composable
 fun TabContent(tab: Routes.TabRoute) {
-    // 根据tab展示对应内容，这里仅为示例，实际应映射到具体屏幕或内容
+
+    // 创建 ImagePicker 和 ImageLoader对象
     val imagePickerImpl = CreateImagePicker()
-    var images by remember { mutableStateOf<List<String>>(emptyList()) }
-
-
-    // 使用工厂函数来实例化 ImageLoader
     val imageLoader = CreateImageLoader()
 
+    var images by remember { mutableStateOf<List<String>>(emptyList()) }
     LaunchedEffect(key1 = Unit) {
         images = withContext(Dispatchers.IO) {
             imagePickerImpl.fetchImages()

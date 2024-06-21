@@ -28,7 +28,7 @@ import compose.icons.evaicons.outline.Plus
 import compose.icons.evaicons.outline.PlusSquare
 import compose.icons.evaicons.outline.Settings2
 import org.example.project.data.SharedStateManager
-import org.example.project.screen.HomeView
+import org.example.project.screen.HomeScreen
 import org.example.project.screen.PublishScreen
 import org.example.project.screen.ScheduleView
 import org.example.project.screen.SettingView
@@ -44,7 +44,9 @@ class Routes {
 
             @Composable
             override fun target() {
-                HomeView()
+                val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
+                navigator.push(HomeScreen)
+                //HomeView()
             }
         },
 

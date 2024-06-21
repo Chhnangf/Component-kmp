@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.getScreenModel
+import org.example.project.data.PhotoScreenModel
 import org.example.project.data.SharedStateManager
 import org.example.project.data.navigation.Routes
 

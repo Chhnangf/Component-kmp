@@ -6,8 +6,7 @@ import kotlinx.serialization.Serializable
 data class PhotoObject(
     val objectID: Int,
     val title: String,
-    val text: String,
-    val aurthor: String,
+    val artistDisplayName: String,
     val medium: String,
     val dimensions: String,
     val objectURL: String,
@@ -17,4 +16,4 @@ data class PhotoObject(
     val repository: String,
     val department: String,
     val creditLine: String,
-    )
+)

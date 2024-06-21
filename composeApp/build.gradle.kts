@@ -73,6 +73,10 @@ kotlin {
             // Viewmodel support for Compose multiplatform
             implementation(libs.lifecycle.viewmodel.compose)
 
+            implementation(libs.voyager.koin)
+
+            implementation(libs.kamel)
+
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
@@ -84,7 +88,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-            implementation(libs.voyager.koin)
             implementation(libs.voyager.hilt)
 
             implementation("androidx.activity:activity-compose:1.7.2")

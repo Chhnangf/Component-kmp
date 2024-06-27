@@ -32,7 +32,7 @@ class PhotoScreenModel(private val photoRepository: PhotoRepository) : ScreenMod
      * 向服务器添加新的照片数据。
      * @param photoObjects 要添加的照片对象列表。
      */
-     fun addPhotoObjects(photoObjects: PhotoObject) {
+     fun addPhotoObjects(photoObjects: List<PhotoObject>) {
         screenModelScope.launch {
             try {
                 // 调用 repository 的 addPhoto 方法，并获取结果

@@ -21,7 +21,7 @@ interface PhotoApi {
      * @return 一个包含照片对象的列表，这些对象从远程数据源获取。
      */
     suspend fun getData(): List<PhotoObject>
-    suspend fun postData(data: PhotoObject): PhotoObject?
+    suspend fun postData(data: List<PhotoObject>): PhotoObject?
 }
 
 /**
@@ -80,7 +80,7 @@ class KtorPhotoApi(private val client: HttpClient): PhotoApi {
      * @param data 要发送的数据，这里假设是一个 PhotoObject 列表。
      * @return 服务器响应的数据，如果请求失败则返回 null。
      */
-    override suspend fun postData(data:PhotoObject): PhotoObject? {
+    override suspend fun postData(data:List<PhotoObject>): PhotoObject? {
         return try {
             println("发起POST请求到：$API_URL")
             val response = client.post(API_URL) {
@@ -88,6 +88,7 @@ class KtorPhotoApi(private val client: HttpClient): PhotoApi {
                 setBody(data)
             }
             println("POST 请求成功，服务器响应: ${response.status}")
+            println(response)
             response.body() // 返回响应体
         } catch (e:Exception) {
             if (e is CancellationException) throw e

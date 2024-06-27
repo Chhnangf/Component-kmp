@@ -10,6 +10,9 @@ fun App() {
     MaterialTheme {
         initKoin()
 
-        Navigator(HomeScreen)
+        //Navigator(HomeScreen)
+
+        // test
+        Navigator(MainScreen)
     }
 }

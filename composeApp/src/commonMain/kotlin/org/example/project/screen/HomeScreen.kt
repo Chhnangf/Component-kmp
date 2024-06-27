@@ -18,9 +18,12 @@ import org.example.project.data.PhotoScreenModel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +47,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key.Companion.R
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -100,15 +105,11 @@ data object HomeScreen : Screen {
     override fun Content() {
         val screenModel: PhotoScreenModel = getScreenModel()
 
-
-
         val pagerState = rememberPagerState(
             pageCount = { AppPages.entries.size },
             initialPage = AppPages.PAGE_TWO.ordinal
         )
         val coroutineScope = rememberCoroutineScope()
-
-        val currentTab = remember { SharedStateManager.currentTab }.collectAsState().value
 
         Surface {
             Column {
@@ -160,9 +161,52 @@ data object HomeScreen : Screen {
                     }
                 }
 
-                MainScreen.NavationBar()
+                NavationBar()
             }
 
+        }
+    }
+}
+
+@Composable
+fun NavationBar() {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(20.dp, 6.dp, 20.dp, 6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Routes.BarRoute.entries.forEach { route ->
+                Column(
+                    modifier = Modifier.clickable(
+                        onClick = {
+                            println("\nbefore click rout -> ${route.description}, ${SharedStateManager.currentTab.value}")
+                            SharedStateManager.update(route)
+                            println("\nafter click rout -> ${route.description}, ${SharedStateManager.currentTab.value}")
+                        },
+                        indication = null,
+                        interactionSource = MutableInteractionSource()
+                    ),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    println("icon state -> $route, ${SharedStateManager.currentTab.value}")
+                    androidx.compose.material.Icon(
+                        imageVector = if (route == SharedStateManager.currentTab.value) route.selectImage else route.imageVector,
+                        contentDescription = route.description,
+                        tint = if (route == SharedStateManager.currentTab.value) Color.Blue else Color.Black
+                    )
+
+                    androidx.compose.material3.Text(
+                        text = route.description,
+                        fontSize = 11.sp,
+                        color = if (route == SharedStateManager.currentTab.value) Color.Blue else Color.Black
+                    )
+
+                }
+
+            }
         }
     }
 }
@@ -172,8 +216,8 @@ fun PageOneContent(screenModel: PhotoScreenModel) {
     val navigator = LocalNavigator.currentOrThrow
     val objects by screenModel.objects.collectAsState()
     val objectList = PhotoObject(
-        126,
-        "Task 3",
+        127,
+        "Task 4",
         "feedback",
         "??",
         "0*0",
@@ -183,7 +227,7 @@ fun PageOneContent(screenModel: PhotoScreenModel) {
         "https://images.metmuseum.org/CRDImages/ep/web-additional/DT1567.jpg",
         "null",
         "null",
-        "2024-6-26"
+        "2024-6-27"
     )
     // Your content for Page One here
     Box(modifier = Modifier.fillMaxSize().background(Color.Gray)) {
@@ -191,7 +235,7 @@ fun PageOneContent(screenModel: PhotoScreenModel) {
             Text("This is Page One")
             Button(
                 onClick = {
-                    screenModel.addPhotoObjects(objectList)
+                    screenModel.addPhotoObjects(listOf(objectList))
                 }
             ) {
                 Text("POST")
@@ -222,12 +266,13 @@ fun PageThrContent(screenModel: PhotoScreenModel) {
 
     val pullToRefreshState = rememberPullToRefreshState()
     if (pullToRefreshState.isRefreshing) {
-
+        screenModel.refresh()
         pullToRefreshState.endRefresh()
     }
 
+
     // Your content for Page Two here
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().nestedScroll(pullToRefreshState.nestedScrollConnection)) {
         AnimatedContent(objects.isNotEmpty()) { objectsAvailable ->
             if (objectsAvailable) {
                 ObjectGrid(
@@ -239,7 +284,10 @@ fun PageThrContent(screenModel: PhotoScreenModel) {
             } else {
                 EmptyScreenContent(Modifier.fillMaxSize())
             }
-
+            PullToRefreshContainer(
+                state = pullToRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }

@@ -77,6 +77,21 @@ kotlin {
 
             implementation(libs.kamel)
 
+            // https://github.com/DevSrSouza/compose-icons
+            implementation(libs.composeIcons.evaIcons)
+            implementation(libs.composeIcons.cssGg)
+            implementation(libs.composeIcons.feather)
+            implementation(libs.composeIcons.simpleIcons)
+            implementation(libs.composeIcons.weatherIcons)
+            implementation(libs.composeIcons.fontAwesome)
+            implementation(libs.composeIcons.lineAwesome)
+            implementation(libs.composeIcons.linea)
+            implementation(libs.composeIcons.octicons)
+            implementation(libs.composeIcons.tablerIcons)
+
+
+
+
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)

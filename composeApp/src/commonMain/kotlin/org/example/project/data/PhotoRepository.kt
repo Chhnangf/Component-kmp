@@ -47,7 +47,7 @@ class PhotoRepository (
      */
     fun getObjectByID(objectId: Int): Flow<PhotoObject?> = photoStorage.getObjectByID(objectId)
 
-    suspend fun postPhoto(data: PhotoObject) {
+    suspend fun postPhoto(data: List<PhotoObject>) {
         println("postPhoto $data")
         photoApi.postData(data)
     }

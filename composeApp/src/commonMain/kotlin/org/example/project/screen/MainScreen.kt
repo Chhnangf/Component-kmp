@@ -58,17 +58,16 @@ object MainScreen : Screen {
         ) {
             // 4 * Button
             Row(
-                modifier = Modifier.fillMaxWidth().padding(20.dp, 6.dp, 20.dp, 6.dp)
-                ,
+                modifier = Modifier.fillMaxWidth().padding(20.dp, 6.dp, 20.dp, 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Routes.BarRoute.entries.forEach {
+                Routes.BarRoute.entries.forEach { route ->
                     // Button: Icon + Text
 
                     Column(
                         modifier = Modifier.clickable(
-                            onClick = { SharedStateManager.update(it) },
+                            onClick = { SharedStateManager.update(route) },
                             indication = null,
                             interactionSource = MutableInteractionSource()
                         )
@@ -78,15 +77,15 @@ object MainScreen : Screen {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            imageVector = if (it == SharedStateManager.currentTab.value) it.selectImage else it.imageVector,
-                            contentDescription = it.description,
-                            tint = if (it == SharedStateManager.currentTab.value) Color.Blue else Color.Black
+                            imageVector = if (route == SharedStateManager.currentTab.value) route.selectImage else route.imageVector,
+                            contentDescription = route.description,
+                            tint = if (route == SharedStateManager.currentTab.value) Color.Blue else Color.Black
                         )
 
                         Text(
-                            text = it.description,
+                            text = route.description,
                             fontSize = 11.sp,
-                            color = if (it == SharedStateManager.currentTab.value) Color.Blue else Color.Black
+                            color = if (route == SharedStateManager.currentTab.value) Color.Blue else Color.Black
                         )
 
                     }

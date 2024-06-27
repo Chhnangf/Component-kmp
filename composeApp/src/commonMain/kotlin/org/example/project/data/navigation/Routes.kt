@@ -68,7 +68,7 @@ class Routes {
             override fun target() {
                 val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
                 navigator.push(PublishScreen())
-                SharedStateManager.currentTab.value = Home_Screen
+//                SharedStateManager.currentTab.value = Home_Screen
             }
         },
 

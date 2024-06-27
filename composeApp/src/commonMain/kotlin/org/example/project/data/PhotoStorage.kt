@@ -45,6 +45,7 @@ class InMemoryPhotoStorage : PhotoStorage {
      * @param newObject 要保存的新照片对象列表。
      */
     override suspend fun saveObjects(newObject: List<PhotoObject>) {
+        print(newObject)
         storedObjects.value = newObject
     }
 

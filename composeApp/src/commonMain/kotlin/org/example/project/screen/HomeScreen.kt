@@ -41,8 +41,11 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,6 +82,9 @@ import org.example.project.data.navigation.Routes
 import cafe.adriel.voyager.koin.getScreenModel
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import org.example.project.data.PhotoObject
 import org.example.project.data.SharedStateManager
 
@@ -94,11 +100,15 @@ data object HomeScreen : Screen {
     override fun Content() {
         val screenModel: PhotoScreenModel = getScreenModel()
 
+
+
         val pagerState = rememberPagerState(
             pageCount = { AppPages.entries.size },
             initialPage = AppPages.PAGE_TWO.ordinal
         )
         val coroutineScope = rememberCoroutineScope()
+
+        val currentTab = remember { SharedStateManager.currentTab }.collectAsState().value
 
         Surface {
             Column {
@@ -141,14 +151,13 @@ data object HomeScreen : Screen {
                             }
                             HorizontalPager(state = pagerState) { page ->
                                 when (AppPages.entries[page]) {
-                                    AppPages.PAGE_ONE -> PageOneContent()
+                                    AppPages.PAGE_ONE -> PageOneContent(screenModel)
                                     AppPages.PAGE_TWO -> PageTwoContent()
                                     AppPages.PAGE_THEE -> PageThrContent(screenModel)
                                 }
                             }
                         }
                     }
-                    SharedStateManager.currentTab.value.target()
                 }
 
                 MainScreen.NavationBar()
@@ -159,12 +168,34 @@ data object HomeScreen : Screen {
 }
 
 @Composable
-fun PageOneContent() {
+fun PageOneContent(screenModel: PhotoScreenModel) {
+    val navigator = LocalNavigator.currentOrThrow
+    val objects by screenModel.objects.collectAsState()
+    val objectList = PhotoObject(
+        126,
+        "Task 3",
+        "feedback",
+        "??",
+        "0*0",
+        "null",
+        "null",
+        "https://images.metmuseum.org/CRDImages/ep/original/DT1567.jpg",
+        "https://images.metmuseum.org/CRDImages/ep/web-additional/DT1567.jpg",
+        "null",
+        "null",
+        "2024-6-26"
+    )
     // Your content for Page One here
     Box(modifier = Modifier.fillMaxSize().background(Color.Gray)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("This is Page One")
-
+            Button(
+                onClick = {
+                    screenModel.addPhotoObjects(objectList)
+                }
+            ) {
+                Text("POST")
+            }
         }
 
     }
@@ -181,11 +212,19 @@ fun PageTwoContent() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PageThrContent(screenModel: PhotoScreenModel) {
 
     val navigator = LocalNavigator.currentOrThrow
     val objects by screenModel.objects.collectAsState()
+    println(objects)
+
+    val pullToRefreshState = rememberPullToRefreshState()
+    if (pullToRefreshState.isRefreshing) {
+
+        pullToRefreshState.endRefresh()
+    }
 
     // Your content for Page Two here
     Box(modifier = Modifier.fillMaxSize()) {

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import io.github.vinceglb.filekit.core.FileKit
 import org.example.project.cache.AndroidContents
 import org.example.project.platform.Permission
 
@@ -14,7 +15,7 @@ import org.example.project.platform.Permission
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        FileKit.init(this)
         setContent {
             AndroidContents.localContext = this
             App()

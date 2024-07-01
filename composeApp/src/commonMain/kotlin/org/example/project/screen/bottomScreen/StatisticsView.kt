@@ -1,4 +1,4 @@
-package org.example.project.screen
+package org.example.project.screen.bottomScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

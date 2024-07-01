@@ -89,8 +89,21 @@ kotlin {
             implementation(libs.composeIcons.octicons)
             implementation(libs.composeIcons.tablerIcons)
 
+            /**
+             * 高斯模糊
+             * https://github.com/chrisbanes/haze
+             */
+            implementation(libs.haze.compose)
+            implementation(libs.haze.materials)
 
+            implementation(libs.coil.compose)
+            implementation(libs.coil.ktor)
 
+            /**
+             *  file picker and save
+             */
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.compose)
 
         }
         androidMain.dependencies {
@@ -106,10 +119,6 @@ kotlin {
             implementation(libs.voyager.hilt)
 
             implementation("androidx.activity:activity-compose:1.7.2")
-            implementation("io.coil-kt:coil:2.6.0")
-            implementation("io.coil-kt:coil-compose:2.6.0")
-
-
 
         }
         iosMain.dependencies {

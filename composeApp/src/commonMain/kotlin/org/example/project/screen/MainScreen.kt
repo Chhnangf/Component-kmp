@@ -5,7 +5,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -32,24 +31,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import org.example.project.screen.component.haze.Samples
 import kotlinx.coroutines.launch
 import org.example.project.data.PhotoScreenModel
-import org.example.project.data.SharedStateManager
-import org.example.project.data.navigation.Routes
+import org.example.project.data.navigation.AppPages
+import org.example.project.data.navigation.ComponentPages
 import org.example.project.data.navigation.ScreenType
+import org.example.project.screen.bottomScreen.PageOneContent
+import org.example.project.screen.bottomScreen.PageThrContent
+import org.example.project.screen.bottomScreen.PageTwoContent
+import org.example.project.screen.component.other.Others
 
 
 object MainScreen : Screen {
@@ -91,7 +94,6 @@ object MainScreen : Screen {
 @Composable
 fun HomeContent(screenModel: PhotoScreenModel) {
     // 这里是HomeScreen页面的内容
-//    Text("Home Screen Content")
     val pagerState = rememberPagerState(
         pageCount = { AppPages.entries.size },
         initialPage = AppPages.PAGE_TWO.ordinal
@@ -114,13 +116,8 @@ fun HomeContent(screenModel: PhotoScreenModel) {
                             AppPages.entries.forEachIndexed { index, page ->
                                 Tab(
                                     selected = pagerState.currentPage == index,
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(
-                                                index
-                                            )
-                                        }
-                                    },
+                                    onClick = { coroutineScope.launch {
+                                            pagerState.animateScrollToPage(index) } },
                                     text = {
                                         Text(
                                             page.title,
@@ -153,6 +150,50 @@ fun HomeContent(screenModel: PhotoScreenModel) {
     }
 }
 
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ChatContent() {
+    // 这里是ChatScreen页面的内容
+    val paperState = rememberPagerState(
+        pageCount = { ComponentPages.entries.size },
+        initialPage = ComponentPages.entries.first().ordinal
+    )
+    val coroutineScope = rememberCoroutineScope()
+
+    TabRow(selectedTabIndex = paperState.currentPage) {
+        ComponentPages.entries.forEachIndexed { index, screenType ->
+            Tab(
+                selected = paperState.currentPage == index,
+                onClick = { coroutineScope.launch { paperState.animateScrollToPage(index) } },
+                ){
+                Text(screenType.title)
+            }
+        }
+    }
+    HorizontalPager(state = paperState) { page ->
+        when(ComponentPages.entries[page]) {
+            ComponentPages.PAGE_HAZE -> Samples("Haze demo")
+            ComponentPages.PAGE_OTHER -> Others()
+        }
+    }
+
+}
+
+@Composable
+fun PushContent() {
+    // 这里是PushScreen页面的内容
+    val navigator = LocalNavigator.currentOrThrow
+
+}
+
+@Composable
+fun SettingsContent() {
+    // 这里是SettingsScreen页面的内容
+    Text("Settings Screen Content")
+}
+
 @Composable
 fun BottomBar(currentScreen: ScreenType, setCurrentScreen: (ScreenType) -> Unit) {
     Box(
@@ -160,7 +201,7 @@ fun BottomBar(currentScreen: ScreenType, setCurrentScreen: (ScreenType) -> Unit)
             .fillMaxWidth()
             .height(65.dp)
             .padding(horizontal = 20.dp, vertical = 6.dp) // 外部padding
-            .shadow(4.dp) // 在Box上添加阴影
+            //.shadow(elevation = 4.dp) // 在Box上添加阴影
             .clip(RoundedCornerShape(50)) // 使用Box裁剪形状
     ) {
         Surface(
@@ -225,24 +266,4 @@ fun BottomBarItem(selected: Boolean, icon: ImageVector, text: String, onClick: (
             style = textStyle
         )
     }
-    //onClick.invoke() // 这里调用onClick，以便在点击时更新状态
-}
-
-
-@Composable
-fun ChatContent() {
-    // 这里是ChatScreen页面的内容
-    Text("Chat Screen Content")
-}
-
-@Composable
-fun PushContent() {
-    // 这里是PushScreen页面的内容
-    Text("Push Screen Content")
-}
-
-@Composable
-fun SettingsContent() {
-    // 这里是SettingsScreen页面的内容
-    Text("Settings Screen Content")
 }

@@ -1,11 +1,5 @@
 package org.example.project.data.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -13,26 +7,20 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Fill
 import compose.icons.evaicons.Outline
-import compose.icons.evaicons.fill.BarChart
 import compose.icons.evaicons.fill.Home
 import compose.icons.evaicons.fill.Pantone
 import compose.icons.evaicons.fill.PaperPlane
-import compose.icons.evaicons.fill.Plus
 import compose.icons.evaicons.fill.PlusSquare
 import compose.icons.evaicons.fill.Settings2
-import compose.icons.evaicons.outline.BarChart
 import compose.icons.evaicons.outline.Home
 import compose.icons.evaicons.outline.Pantone
 import compose.icons.evaicons.outline.PaperPlane
-import compose.icons.evaicons.outline.Plus
-import compose.icons.evaicons.outline.PlusSquare
 import compose.icons.evaicons.outline.Settings2
-import org.example.project.data.SharedStateManager
-import org.example.project.screen.HomeScreen
-import org.example.project.screen.PublishScreen
-import org.example.project.screen.ScheduleView
-import org.example.project.screen.SettingView
-import org.example.project.screen.StatisticsView
+import org.example.project.screen.bottomScreen.HomeScreen
+import org.example.project.screen.bottomScreen.PublishScreen
+import org.example.project.screen.bottomScreen.ScheduleView
+import org.example.project.screen.bottomScreen.SettingView
+import org.example.project.screen.bottomScreen.StatisticsView
 
 class Routes {
     enum class BarRoute {

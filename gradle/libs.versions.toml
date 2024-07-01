@@ -16,7 +16,7 @@ material3 = "1.2.1"
 voyager = "1.0.0"
 appyx = "2.0.1"
 peekaboo = "0.5.2"
-coil-cmp = "2.6.0"
+coil = "3.0.0-alpha07"
 uuid = "0.8.4"
 logging = "5.1.0"
 icons = "1.1.0"
@@ -24,6 +24,7 @@ napier = "2.7.1"
 lottie = "1.1.2"
 kamel = "0.9.4"
 composeIcons = "1.1.0"
+haze = "0.7.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -78,6 +79,11 @@ composeIcons-octicons = { module = "br.com.devsrsouza.compose.icons:octicons", v
 composeIcons-simpleIcons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "composeIcons" }
 composeIcons-tablerIcons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "composeIcons" }
 
+haze-compose = {module = "dev.chrisbanes.haze:haze", version.ref = "haze"}
+haze-materials = {module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze"}
+
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

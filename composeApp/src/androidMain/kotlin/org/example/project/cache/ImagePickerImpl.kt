@@ -1,9 +1,8 @@
 package org.example.project.cache
 
-import ImagePicker
+import org.example.project.media.ImagePicker
 import android.content.ContentResolver
 import android.content.Context
-import android.database.Cursor
 import android.provider.MediaStore
 import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.Dispatchers

@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -16,14 +17,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -191,6 +199,40 @@ fun ChatContent() {
 fun PushContent() {
     // 这里是PushScreen页面的内容
     val navigator = LocalNavigator.currentOrThrow
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            // reuse default SnackbarHost to have default animation and timing handling
+            SnackbarHost(it) { data ->
+                // custom snackbar with the custom border
+                Snackbar(
+                    modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.secondary),
+                    snackbarData = data
+                )
+            }
+        },
+        floatingActionButton = {
+            var clickCount by remember { mutableStateOf(0) }
+            ExtendedFloatingActionButton(
+                text = { Text("Show snackbar") },
+                onClick = {
+                    // show snackbar as a suspend function
+                    scope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar("Snackbar # ${++clickCount}")
+                    }
+                }
+            )
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
+        content = { innerPadding ->
+            Text(
+                text = "Body content",
+                modifier = Modifier.padding(innerPadding).fillMaxSize().wrapContentSize()
+            )
+        }
+    )
 
 }
 

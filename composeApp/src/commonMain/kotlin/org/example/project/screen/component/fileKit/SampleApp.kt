@@ -1,7 +1,17 @@
 package org.example.project.screen.component.fileKit
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateOffsetAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,8 +19,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -23,6 +36,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,9 +48,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
@@ -51,6 +71,8 @@ import io.github.vinceglb.filekit.core.PlatformFile
 import io.github.vinceglb.filekit.core.baseName
 import io.github.vinceglb.filekit.core.extension
 import kotlinx.coroutines.launch
+import org.example.project.media.MediaStore
+import kotlin.math.roundToInt
 
 @Composable
 fun SampleApp() {
@@ -60,48 +82,36 @@ fun SampleApp() {
     var currentPhotoIndex = remember { mutableStateOf(0) }
 
 
-    val singleFilePicker = rememberFilePickerLauncher(
-        type = PickerType.Image,
+    val singleFilePicker = rememberFilePickerLauncher(type = PickerType.Image,
         title = "Single file picker",
         initialDirectory = directory?.path,
-        onResult = { file -> file?.let { files += it } }
-    )
+        onResult = { file -> file?.let { files += it } })
 
-    val singleMediaPicker = rememberFilePickerLauncher(
-        type = PickerType.Video,
+    val singleMediaPicker = rememberFilePickerLauncher(type = PickerType.Video,
         title = "Single file picker",
         initialDirectory = directory?.path,
-        onResult = { file -> file?.let { files += it } }
-    )
+        onResult = { file -> file?.let { files += it } })
 
-    val multipleFilesPicker = rememberFilePickerLauncher(
-        type = PickerType.Image,
+    val multipleFilesPicker = rememberFilePickerLauncher(type = PickerType.Image,
         mode = PickerMode.Multiple,
         title = "Multiple files picker",
         initialDirectory = directory?.path,
-        onResult = { file -> file?.let { files += it } }
-    )
+        onResult = { file -> file?.let { files += it } })
 
-    val filePicker = rememberFilePickerLauncher(
-        type = PickerType.File(listOf("png")),
+    val filePicker = rememberFilePickerLauncher(type = PickerType.File(listOf("png")),
         title = "Single file picker, only png",
         initialDirectory = directory?.path,
-        onResult = { file -> file?.let { files += it } }
-    )
+        onResult = { file -> file?.let { files += it } })
 
-    val filesPicker = rememberFilePickerLauncher(
-        type = PickerType.File(listOf("png")),
+    val filesPicker = rememberFilePickerLauncher(type = PickerType.File(listOf("png")),
         mode = PickerMode.Multiple,
         title = "Multiple files picker, only png",
         initialDirectory = directory?.path,
-        onResult = { file -> file?.let { files += it } }
-    )
+        onResult = { file -> file?.let { files += it } })
 
-    val directoryPicker = rememberDirectoryPickerLauncher(
-        title = "Directory picker",
+    val directoryPicker = rememberDirectoryPickerLauncher(title = "Directory picker",
         initialDirectory = directory?.path,
-        onResult = { dir -> directory = dir }
-    )
+        onResult = { dir -> directory = dir })
 
     val saver = rememberFileSaverLauncher { file ->
         file?.let { files += it }
@@ -118,58 +128,75 @@ fun SampleApp() {
             )
         }
     }
-
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp),
-            modifier = Modifier.fillMaxWidth()
+    Box {
+        Column(
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                .background(Color.LightGray)
         ) {
-            // 静态项：触发图片选择器的按
-            items(files.size) {index ->
-                PhotoItem(
-                    file = files[index],
-                    onClick = {
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // 静态项：触发图片选择器的按
+                items(files.size) { index ->
+                    PhotoItem(file = files[index], onClick = {
                         showDialog = true
                         currentPhotoIndex.value = index
-                    },
-                    onSaveFile = { file ->
+                    }, onSaveFile = { file ->
                         saveFile(file)
-                    }
+                    })
+                }
+            }
+
+
+            Column(
+                Modifier.horizontalScroll(rememberScrollState()).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 单文件选择器
+                PickerButton("Single image picker", onClick = { singleFilePicker.launch() })
+
+                // 单视频选择器
+                PickerButton("Single video picker", onClick = { singleMediaPicker.launch() })
+
+                // 多文件选择器
+                PickerButton("Multiple image picker", onClick = { multipleFilesPicker.launch() })
+
+                // 单文件选择器，仅限 PNG
+                PickerButton("Single file picker, only png", onClick = { filePicker.launch() })
+
+                // 多文件选择器，仅限 PNG
+                PickerButton("Multiple files picker, only png", onClick = { filesPicker.launch() })
+
+                // 目录选择器
+                PickerButton(
+                    "Directory picker",
+                    onClick = { directoryPicker.launch() },
+                    enabled = FileKit.isDirectoryPickerSupported()
                 )
             }
+
+
         }
 
+        Box {
+            if (showDialog) {
+//        PhotoListShade(
+//            photoItems = files,
+//            currentPhotoIndex = currentPhotoIndex,
+//            onDismissRequest = { showDialog = false },
+//            onSaveFile = ::saveFile
+//        )
+                DraggableDialog(photoItems = files,
+                    currentPhotoIndex = currentPhotoIndex,
+                    onDismiss = { showDialog = false })
 
-        Column(
-            Modifier.horizontalScroll(rememberScrollState()).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // 单文件选择器
-            PickerButton("Single image picker", onClick = { singleFilePicker.launch() })
-
-            // 单视频选择器
-            PickerButton("Single video picker", onClick = { singleMediaPicker.launch() })
-
-            // 多文件选择器
-            PickerButton("Multiple image picker", onClick = { multipleFilesPicker.launch() })
-
-            // 单文件选择器，仅限 PNG
-            PickerButton("Single file picker, only png", onClick = { filePicker.launch() })
-
-            // 多文件选择器，仅限 PNG
-            PickerButton("Multiple files picker, only png", onClick = { filesPicker.launch() })
-
-            // 目录选择器
-            PickerButton(
-                "Directory picker",
-                onClick = { directoryPicker.launch() },
-                enabled = FileKit.isDirectoryPickerSupported()
-            )
+            }
         }
-
     }
+
 
 
 
@@ -181,101 +208,263 @@ fun SampleApp() {
     }
 
 
-    if (showDialog) {
-        PhotoListDialog(
-            photoItems = files,
-            currentPhotoIndex = currentPhotoIndex,
-            onDismissRequest = { showDialog = false },
-            onSaveFile = ::saveFile
-        )
-    }
 }
 
 @Composable
-fun PhotoListDialog(
+fun PhotoListShade(
     photoItems: List<PlatformFile>,
     currentPhotoIndex: MutableState<Int>,
     onDismissRequest: () -> Unit,
     onSaveFile: (PlatformFile) -> Unit
 ) {
 
+
     val currentFile = photoItems.getOrNull(currentPhotoIndex.value)
+    var visible by remember { mutableStateOf(true) }
+
     if (currentFile != null) { // 确保索引有效
         var bytes by remember(currentFile) { mutableStateOf<ByteArray?>(null) }
         LaunchedEffect(currentFile) {
             bytes = currentFile.readBytes()
+
         }
 
-        if (photoItems.isNotEmpty()) {
-            Dialog(
-                onDismissRequest = onDismissRequest
-            ) {
-                Column(
-                    modifier = Modifier
-                        .width(IntrinsicSize.Max)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    // 显示当前选中的图片
-                    AsyncImage(
-                        bytes,
-                        contentDescription = "Image preview",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f) // 假设图片宽高比为 1:1
-                    )
 
-                    // 添加左右切换按钮
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        IconButton(
-                            onClick = {
-                                if (currentPhotoIndex.value > 0) {
-                                    // 切换到上一张图片
-                                    currentPhotoIndex.value = currentPhotoIndex.value - 1
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Previous photo"
-                            )
-                        }
+        Dialog(onDismissRequest = {
+            visible = false
+            onDismissRequest()
+        }) {
 
-                        Text(
-                            text = "${currentPhotoIndex.value + 1} / ${photoItems.size}",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 16.dp)
-                        )
+            bytes?.let {
+                AsyncImage(
+                    bytes,
+                    contentDescription = currentFile.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth()
 
-                        IconButton(
-                            onClick = {
-                                if (currentPhotoIndex.value < photoItems.lastIndex) {
-                                    // 切换到下一张图片
-                                    currentPhotoIndex.value = currentPhotoIndex.value + 1
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "Next photo"
-                            )
+                )
+            }
+        }
+
+//        // 遮罩和内容的布局
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize() // 填充整个屏幕
+//                .border(2.dp,Color.Red)
+//                .background(Color.Black) // 设置黑色背景
+//                .padding(4.dp) // 应用 Scaffold 内部间距
+//        ) {
+//            if (photoItems.isNotEmpty()) {
+//                println("PhotoListShade -> 显示AsyncImage")
+//                // 您的图片显示逻辑...
+//                bytes?.let {
+//                    AsyncImage(
+//                        bytes,
+//                        contentDescription = currentFile.name,
+//                        contentScale = ContentScale.Crop,
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//
+//                    )
+//                }
+//            }
+//        }
+
+
+//            Dialog(
+//                onDismissRequest = {
+//                    onDismissRequest()
+//                    showDialog.value = false
+//                }
+//            ) {
+//                Column(
+//                    modifier = Modifier
+//                        .width(with(LocalDensity.current) { 300.dp.toPx() * transitionState.value }.dp)
+//                        .padding(horizontal = 16.dp)
+//                ) {
+//                    // 显示当前选中的图片
+//                    AsyncImage(
+//                        bytes,
+//                        contentDescription = "Image preview",
+//                        contentScale = ContentScale.Crop,
+//                        modifier = Modifier
+//                            .weight(1f)
+//                            .aspectRatio(1f) // 假设图片宽高比为 1:1
+//                    )
+//
+//                    // 添加左右切换按钮
+//                    Row(
+//                        horizontalArrangement = Arrangement.Center,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(vertical = 8.dp)
+//                    ) {
+//                        IconButton(
+//                            onClick = {
+//                                if (currentPhotoIndex.value > 0) {
+//                                    // 切换到上一张图片
+//                                    currentPhotoIndex.value = currentPhotoIndex.value - 1
+//                                }
+//                            }
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                                contentDescription = "Previous photo"
+//                            )
+//                        }
+//
+//                        Text(
+//                            text = "${currentPhotoIndex.value + 1} / ${photoItems.size}",
+//                            textAlign = TextAlign.Center,
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .padding(horizontal = 16.dp)
+//                        )
+//
+//                        IconButton(
+//                            onClick = {
+//                                if (currentPhotoIndex.value < photoItems.lastIndex) {
+//                                    // 切换到下一张图片
+//                                    currentPhotoIndex.value = currentPhotoIndex.value + 1
+//                                }
+//                            }
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+//                                contentDescription = "Next photo"
+//                            )
+//                        }
+//                    }
+//
+//                    Button(
+//                        onClick = {
+//                            println("bytes: $bytes")
+//                            //onSaveFile(photoItems[currentPhotoIndex.value])
+//                            bytes?.let { MediaStore.storePhoto(bytes!!, null, null) }
+//
+//                        },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(vertical = 16.dp)
+//                    ) {
+//                        Text("Save Photo")
+//                    }
+//                }
+//            }
+
+    }
+
+
+}
+
+
+@Composable
+fun DraggableDialog(
+    photoItems: List<PlatformFile>, currentPhotoIndex: MutableState<Int>, onDismiss: () -> Unit
+) {
+    var isDialogVisible by remember { mutableStateOf(true) }
+
+    // Modifier.offset 标记变量
+    var backgroundAlpha by remember { mutableStateOf(1f) } // Alpha 初始值为完全不透明
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+    var totalDragDistanceX by remember { mutableStateOf(0f) } // 用于记录Y轴总拖动距离
+    var totalDragDistanceY by remember { mutableStateOf(0f) } // 用于记录Y轴总拖动距离
+    val closeThreshold = 450f // 关闭预览的需求偏移量
+    val cutoverThreshold = 200f
+    val coroutineScope = rememberCoroutineScope()
+    val animagtedOffset = animateOffsetAsState(
+        Offset(offsetX,offsetY), spring(Spring.DampingRatioLowBouncy,Spring.StiffnessLow)
+    )
+
+    val currentFile = photoItems.getOrNull(currentPhotoIndex.value)
+
+
+    if (currentFile != null) { // 确保索引有效
+        var bytes by remember(currentFile) { mutableStateOf<ByteArray?>(null) }
+        LaunchedEffect(currentFile) {
+            bytes = currentFile.readBytes()
+
+        }
+
+        if (isDialogVisible) {
+            Box(
+                modifier = Modifier
+                    .background(Color.Black.copy(alpha = backgroundAlpha)) // 使用 Alpha 调整背景色
+                    .fillMaxSize().wrapContentHeight()
+                    .clickable {
+                        if (offsetX == 0f && offsetY == 0f) {
+                            isDialogVisible = false
+                            onDismiss()
                         }
                     }
+                    .offset {
+                        // 根据拖动的偏移量来调整 Dialog 的位置
+                        //IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
+                        animagtedOffset.value.round()
+                    }.pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = {
+                                // 重置 totalDragDistance
+                                totalDragDistanceY = 0f
+                            },
+                            onDragEnd = {
+                                // 拖动结束时的处理逻辑
+                                if (totalDragDistanceY > closeThreshold) {
+                                    coroutineScope.launch {
+                                        isDialogVisible = false
+                                        onDismiss()
+                                    }
+                                }
+                                if (currentPhotoIndex.value < photoItems.lastIndex) {
+                                    if (totalDragDistanceX >= cutoverThreshold) {
+                                        // 切换到下一张图片
+                                        currentPhotoIndex.value = currentPhotoIndex.value + 1
+                                    }
+                                }
+                                if (currentPhotoIndex.value > 0) {
+//                                    // 切换到上一张图片
+                                    if (totalDragDistanceX <= -cutoverThreshold) {
+                                        currentPhotoIndex.value = currentPhotoIndex.value - 1
+                                    }
+                                }
 
-                    Button(
-                        onClick = { onSaveFile(photoItems[currentPhotoIndex.value]) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                    ) {
-                        Text("Save Photo")
+                                // 重置数据
+                                offsetX = 0f
+                                offsetY = 0f
+                                totalDragDistanceX = 0f
+                            }) { change, dragAmount ->
+                            // 更新偏移量
+                            offsetX += change.position.x - change.previousPosition.x
+                            offsetY += change.position.y - change.previousPosition.y
+
+                            // 更新 Alpha 值，例如根据拖动的距离来调整透明度
+                            // 这里只是一个示例，你可能需要根据你的具体需求调整 Alpha 的计算方式
+                            val alphaChange = (change.previousPosition.y - change.position.y) / 10f
+                            backgroundAlpha += alphaChange.coerceIn(-0.01f, 0.01f)
+                            backgroundAlpha =
+                                backgroundAlpha.coerceIn(0f, 1f) // 确保 Alpha 在 0 到 1 之间
+
+                            // 更新 totalDragDistance，只累加拖动距离的绝对值
+                            totalDragDistanceX += -dragAmount.x
+                            totalDragDistanceY += kotlin.math.abs(dragAmount.y)
+                            println("totalDragDistanceX -> $totalDragDistanceX")
+
+                        }
+                    }) {
+                // Dialog 的内容
+                Column {
+                    // 添加 Dialog 的标题、按钮等
+                    // ...
+                    bytes?.let {
+                        AsyncImage(
+                            bytes,
+                            contentDescription = currentFile.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .weight(1f).aspectRatio(1f)
+
+                        )
                     }
                 }
             }
@@ -285,18 +474,17 @@ fun PhotoListDialog(
 
 @Composable
 fun PickerButton(
-    title: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit
+    title: String, enabled: Boolean = true, onClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = onClick,
-            enabled = enabled
+            onClick = onClick, enabled = enabled
         ) {
             Text(title)
         }
     }
 }
+
+

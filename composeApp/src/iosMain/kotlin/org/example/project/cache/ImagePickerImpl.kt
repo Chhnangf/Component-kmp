@@ -1,6 +1,6 @@
 package org.example.project.cache
 
-import ImagePicker
+import org.example.project.media.ImagePicker
 import androidx.compose.ui.graphics.ImageBitmap
 
 

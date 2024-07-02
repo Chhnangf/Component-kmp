@@ -2,13 +2,17 @@ package org.example.project.data
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.content.PartData
 import io.ktor.http.contentType
 import io.ktor.utils.io.CancellationException
-import kotlinx.coroutines.CancellableContinuation
+import org.example.project.data.file.FileData
 
 /**
  * 定义了获取照片数据的接口。
@@ -22,6 +26,8 @@ interface PhotoApi {
      */
     suspend fun getData(): List<PhotoObject>
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
+
+    suspend fun postFile(file: FileData)
 }
 
 /**
@@ -98,4 +104,46 @@ class KtorPhotoApi(private val client: HttpClient): PhotoApi {
         }
     }
 
+
+    override suspend fun postFile(file: FileData) {
+        val parts = mutableListOf<PartData>()
+        // 如果存在标题，添加标题字段
+        file.title?.let {
+            parts.add(
+                PartData.FormItem(
+                    "title",
+                    { file.title },
+                    Headers.build {
+                        append("Content-Disposition", "form-data; name=\"title\"")
+                    }
+                )
+            )
+        }
+        // 添加描述字段
+        parts.add(
+            PartData.FormItem(
+                "description",
+                { file.description },
+                Headers.build {
+                    append("Content-Disposition", "form-data; name=\"description\"")
+                }
+            )
+        )
+        val multiPartContent = customMultiPartMixedDataContent(parts)
+        println("MultiPartFormDataContent created: $multiPartContent") // 打印创建的多部分请求体信息
+        val response: HttpResponse = client.post("http://10.11.145.242:8080/upload") {
+            setBody(multiPartContent) // MultiPartFormDataContent(parts)
+            // 使用 customMultiPartMixedDataContent 函数创建多部分请求体
+            println("Sending request to http://localhost:8080/upload with body: $body")
+        }
+        return response.body()
+    }
+
 }
+
+fun customMultiPartMixedDataContent(parts: List<PartData>): MultiPartFormDataContent {
+    val boundary = "WebAppBoundary"
+    val contentType = ContentType.MultiPart.Mixed.withParameter("boundary", boundary)
+    return MultiPartFormDataContent(parts, boundary, contentType)
+}
+

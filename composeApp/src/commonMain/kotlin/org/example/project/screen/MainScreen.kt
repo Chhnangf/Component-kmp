@@ -5,40 +5,55 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -48,8 +63,11 @@ import io.github.vinceglb.filekit.core.FileKit
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
 import io.github.vinceglb.filekit.core.pickFile
-import org.example.project.screen.component.haze.Samples
 import kotlinx.coroutines.launch
+import org.example.project.component.dragOffsetHandler
+import org.example.project.component.fileKit.SampleApp
+import org.example.project.component.haze.Samples
+import org.example.project.component.other.Others
 import org.example.project.data.PhotoScreenModel
 import org.example.project.data.navigation.AppPages
 import org.example.project.data.navigation.ComponentPages
@@ -57,8 +75,6 @@ import org.example.project.data.navigation.ScreenType
 import org.example.project.screen.bottomScreen.PageOneContent
 import org.example.project.screen.bottomScreen.PageThrContent
 import org.example.project.screen.bottomScreen.PageTwoContent
-import org.example.project.screen.component.fileKit.SampleApp
-import org.example.project.screen.component.other.Others
 
 
 object MainScreen : Screen {
@@ -90,7 +106,7 @@ object MainScreen : Screen {
         when (currentScreen) {
             ScreenType.HOME_SCREEN -> HomeContent(screenModel)
             ScreenType.CHAT_SCREEN -> ChatContent()
-            ScreenType.PUSH_SCREEN -> PushContent()
+            ScreenType.PUSH_SCREEN -> PushContent(screenModel)
             ScreenType.SET_SCREEN -> SettingsContent()
         }
     }
@@ -122,8 +138,11 @@ fun HomeContent(screenModel: PhotoScreenModel) {
                             AppPages.entries.forEachIndexed { index, page ->
                                 Tab(
                                     selected = pagerState.currentPage == index,
-                                    onClick = { coroutineScope.launch {
-                                            pagerState.animateScrollToPage(index) } },
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            pagerState.animateScrollToPage(index)
+                                        }
+                                    },
                                     text = {
                                         Text(
                                             page.title,
@@ -157,7 +176,6 @@ fun HomeContent(screenModel: PhotoScreenModel) {
 }
 
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChatContent() {
@@ -173,13 +191,13 @@ fun ChatContent() {
             Tab(
                 selected = paperState.currentPage == index,
                 onClick = { coroutineScope.launch { paperState.animateScrollToPage(index) } },
-                ){
+            ) {
                 Text(screenType.title)
             }
         }
     }
     HorizontalPager(state = paperState) { page ->
-        when(ComponentPages.entries[page]) {
+        when (ComponentPages.entries[page]) {
             ComponentPages.PAGE_HAZE -> Samples("Haze demo")
             ComponentPages.PAGE_OTHER -> Others()
         }
@@ -188,15 +206,50 @@ fun ChatContent() {
 }
 
 @Composable
-fun PushContent() {
+fun PushContent(screenModel: PhotoScreenModel) {
     // 这里是PushScreen页面的内容
-    val navigator = LocalNavigator.currentOrThrow
-
+    SampleApp(screenModel)
 }
+
 
 @Composable
 fun SettingsContent() {
-    SampleApp()
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(Color.LightGray).size(100.dp).clickable {
+                        showDialog = true
+                    }
+            )
+        }
+
+        if (showDialog) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .dragOffsetHandler(onDismiss = { showDialog = false })
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize().background(Color.Black),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.Gray).size(300.dp).clickable { showDialog = false }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

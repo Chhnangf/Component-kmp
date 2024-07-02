@@ -1,4 +1,4 @@
-package org.example.project.screen.component.other
+package org.example.project.component.other
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

@@ -42,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -51,12 +50,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.core.FileKit
-import io.github.vinceglb.filekit.core.PickerMode
-import io.github.vinceglb.filekit.core.PickerType
-import io.github.vinceglb.filekit.core.pickFile
-import org.example.project.screen.component.haze.Samples
+import org.example.project.component.haze.Samples
 import kotlinx.coroutines.launch
 import org.example.project.data.PhotoScreenModel
 import org.example.project.data.navigation.AppPages
@@ -65,8 +59,8 @@ import org.example.project.data.navigation.ScreenType
 import org.example.project.screen.bottomScreen.PageOneContent
 import org.example.project.screen.bottomScreen.PageThrContent
 import org.example.project.screen.bottomScreen.PageTwoContent
-import org.example.project.screen.component.fileKit.SampleApp
-import org.example.project.screen.component.other.Others
+import org.example.project.component.fileKit.SampleApp
+import org.example.project.component.other.Others
 
 
 object MainScreen : Screen {

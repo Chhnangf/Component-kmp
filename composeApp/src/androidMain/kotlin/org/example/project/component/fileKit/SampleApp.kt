@@ -1,42 +1,25 @@
-package org.example.project.screen.component.fileKit
+package org.example.project.component.fileKit
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,14 +35,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.compose.rememberFileSaverLauncher
@@ -71,8 +50,6 @@ import io.github.vinceglb.filekit.core.PlatformFile
 import io.github.vinceglb.filekit.core.baseName
 import io.github.vinceglb.filekit.core.extension
 import kotlinx.coroutines.launch
-import org.example.project.media.MediaStore
-import kotlin.math.roundToInt
 
 @Composable
 fun SampleApp() {
@@ -245,113 +222,6 @@ fun PhotoListShade(
                 )
             }
         }
-
-//        // 遮罩和内容的布局
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize() // 填充整个屏幕
-//                .border(2.dp,Color.Red)
-//                .background(Color.Black) // 设置黑色背景
-//                .padding(4.dp) // 应用 Scaffold 内部间距
-//        ) {
-//            if (photoItems.isNotEmpty()) {
-//                println("PhotoListShade -> 显示AsyncImage")
-//                // 您的图片显示逻辑...
-//                bytes?.let {
-//                    AsyncImage(
-//                        bytes,
-//                        contentDescription = currentFile.name,
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//
-//                    )
-//                }
-//            }
-//        }
-
-
-//            Dialog(
-//                onDismissRequest = {
-//                    onDismissRequest()
-//                    showDialog.value = false
-//                }
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .width(with(LocalDensity.current) { 300.dp.toPx() * transitionState.value }.dp)
-//                        .padding(horizontal = 16.dp)
-//                ) {
-//                    // 显示当前选中的图片
-//                    AsyncImage(
-//                        bytes,
-//                        contentDescription = "Image preview",
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier
-//                            .weight(1f)
-//                            .aspectRatio(1f) // 假设图片宽高比为 1:1
-//                    )
-//
-//                    // 添加左右切换按钮
-//                    Row(
-//                        horizontalArrangement = Arrangement.Center,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(vertical = 8.dp)
-//                    ) {
-//                        IconButton(
-//                            onClick = {
-//                                if (currentPhotoIndex.value > 0) {
-//                                    // 切换到上一张图片
-//                                    currentPhotoIndex.value = currentPhotoIndex.value - 1
-//                                }
-//                            }
-//                        ) {
-//                            Icon(
-//                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                                contentDescription = "Previous photo"
-//                            )
-//                        }
-//
-//                        Text(
-//                            text = "${currentPhotoIndex.value + 1} / ${photoItems.size}",
-//                            textAlign = TextAlign.Center,
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .padding(horizontal = 16.dp)
-//                        )
-//
-//                        IconButton(
-//                            onClick = {
-//                                if (currentPhotoIndex.value < photoItems.lastIndex) {
-//                                    // 切换到下一张图片
-//                                    currentPhotoIndex.value = currentPhotoIndex.value + 1
-//                                }
-//                            }
-//                        ) {
-//                            Icon(
-//                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-//                                contentDescription = "Next photo"
-//                            )
-//                        }
-//                    }
-//
-//                    Button(
-//                        onClick = {
-//                            println("bytes: $bytes")
-//                            //onSaveFile(photoItems[currentPhotoIndex.value])
-//                            bytes?.let { MediaStore.storePhoto(bytes!!, null, null) }
-//
-//                        },
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(vertical = 16.dp)
-//                    ) {
-//                        Text("Save Photo")
-//                    }
-//                }
-//            }
-
     }
 
 

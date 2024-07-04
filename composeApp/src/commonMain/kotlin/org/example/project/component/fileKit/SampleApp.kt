@@ -14,13 +14,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -51,10 +54,12 @@ import io.github.vinceglb.filekit.core.baseName
 import io.github.vinceglb.filekit.core.extension
 import kotlinx.coroutines.launch
 import org.example.project.data.PhotoScreenModel
+import org.example.project.data.file.FileData
 
 @Composable
 fun SampleApp(screenModel:PhotoScreenModel) {
     var files by remember { mutableStateOf(emptyList<PlatformFile>()) }
+    var file by remember { mutableStateOf<ByteArray>(byteArrayOf()) }
     var directory: PlatformDirectory? by remember { mutableStateOf(null) }
     var showDialog by remember { mutableStateOf(false) }
     var currentPhotoIndex = remember { mutableStateOf(0) }
@@ -133,46 +138,77 @@ fun SampleApp(screenModel:PhotoScreenModel) {
                 Modifier.horizontalScroll(rememberScrollState()).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 单文件选择器
-                PickerButton("Single image picker", onClick = { singleFilePicker.launch() })
-
-                // 单视频选择器
-                PickerButton("Single video picker", onClick = { singleMediaPicker.launch() })
+//                // 单文件选择器
+//                PickerButton("Single image picker", onClick = { singleFilePicker.launch() })
+//
+//                // 单视频选择器
+//                PickerButton("Single video picker", onClick = { singleMediaPicker.launch() })
 
                 // 多文件选择器
                 PickerButton("Multiple image picker", onClick = { multipleFilesPicker.launch() })
 
-                // 单文件选择器，仅限 PNG
-                PickerButton("Single file picker, only png", onClick = { filePicker.launch() })
+//                // 单文件选择器，仅限 PNG
+//                PickerButton("Single file picker, only png", onClick = { filePicker.launch() })
+//
+//                // 多文件选择器，仅限 PNG
+//                PickerButton("Multiple files picker, only png", onClick = { filesPicker.launch() })
+//
+//                // 目录选择器
+//                PickerButton(
+//                    "Directory picker",
+//                    onClick = { directoryPicker.launch() },
+//                    enabled = FileKit.isDirectoryPickerSupported()
+//                )
+            }
+            // 使用 mutableStateOf 创建可变状态
+            var title by remember { mutableStateOf("") }
+            var description by remember { mutableStateOf("") }
+            // 使用 Column 来垂直排列文本输入框
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Top) {
+                // 第一个文本输入框用于标题
+                TextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") },
+                    modifier = Modifier
+                        .fillMaxWidth() // 让文本框宽度充满可用空间
+                        .padding(vertical = 8.dp) // 垂直方向上添加一些间距
+                )
 
-                // 多文件选择器，仅限 PNG
-                PickerButton("Multiple files picker, only png", onClick = { filesPicker.launch() })
-
-                // 目录选择器
-                PickerButton(
-                    "Directory picker",
-                    onClick = { directoryPicker.launch() },
-                    enabled = FileKit.isDirectoryPickerSupported()
+                // 第二个文本输入框用于多行描述，设置 maxLines 为 Int.MAX_VALUE 允许多行输入
+                TextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp).heightIn(min = 48.dp, max = 200.dp),
+                    maxLines = 100
                 )
             }
-
-
-        }
-
-        Box {
-            if (showDialog) {
-//        PhotoListShade(
-//            photoItems = files,
-//            currentPhotoIndex = currentPhotoIndex,
-//            onDismissRequest = { showDialog = false },
-//            onSaveFile = ::saveFile
-//        )
-                DraggableDialog(photoItems = files,
-                    currentPhotoIndex = currentPhotoIndex,
-                    onDismiss = { showDialog = false })
+            LaunchedEffect(files) {
+//            file = files.map {platformFile ->
+//                platformFile.readBytes()
+//            }
+                if (files.isNotEmpty()) {
+                    file = files.last().readBytes()
+                }
 
             }
+
+            Button(onClick = {
+                val fileObject = FileData(file, title, description)
+                /** client post to server*/
+                println("UI -> click Button addFileImage -> $fileObject")
+                screenModel.addFile(fileObject)
+            }) {
+                Text("发布")
+            }
+
         }
+
+
+
     }
 
 

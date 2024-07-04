@@ -51,9 +51,10 @@ import io.github.vinceglb.filekit.core.PlatformFile
 import io.github.vinceglb.filekit.core.baseName
 import io.github.vinceglb.filekit.core.extension
 import kotlinx.coroutines.launch
+import org.example.project.data.PhotoScreenModel
 
 @Composable
-fun SampleApp() {
+fun SampleApp(screenModel: PhotoScreenModel) {
     var files by remember { mutableStateOf(emptyList<PlatformFile>()) }
     var directory: PlatformDirectory? by remember { mutableStateOf(null) }
     var showDialog by remember { mutableStateOf(false) }
@@ -146,20 +147,20 @@ fun SampleApp() {
             Modifier.horizontalScroll(rememberScrollState()).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 单文件选择器
-            PickerButton("Single image picker", onClick = { singleFilePicker.launch() })
+//            // 单文件选择器
+//            PickerButton("Single image picker", onClick = { singleFilePicker.launch() })
 
             // 单视频选择器
             PickerButton("Single video picker", onClick = { singleMediaPicker.launch() })
 
-            // 多文件选择器
-            PickerButton("Multiple image picker", onClick = { multipleFilesPicker.launch() })
-
-            // 单文件选择器，仅限 PNG
-            PickerButton("Single file picker, only png", onClick = { filePicker.launch() })
-
-            // 多文件选择器，仅限 PNG
-            PickerButton("Multiple files picker, only png", onClick = { filesPicker.launch() })
+//            // 多文件选择器
+//            PickerButton("Multiple image picker", onClick = { multipleFilesPicker.launch() })
+//
+//            // 单文件选择器，仅限 PNG
+//            PickerButton("Single file picker, only png", onClick = { filePicker.launch() })
+//
+//            // 多文件选择器，仅限 PNG
+//            PickerButton("Multiple files picker, only png", onClick = { filesPicker.launch() })
 
             // 目录选择器
             PickerButton(

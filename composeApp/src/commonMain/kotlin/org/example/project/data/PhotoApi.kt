@@ -1,14 +1,24 @@
-package org.example.project.data
+package org.example.project.data.photoDemo
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.content.PartData
 import io.ktor.http.contentType
+import io.ktor.http.headersOf
+import io.ktor.util.InternalAPI
+import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.CancellationException
-import kotlinx.coroutines.CancellableContinuation
+import io.ktor.utils.io.core.ByteReadPacket
+import org.example.project.data.PhotoObject
+import org.example.project.data.file.FileData
 
 /**
  * 定义了获取照片数据的接口。
@@ -22,6 +32,9 @@ interface PhotoApi {
      */
     suspend fun getData(): List<PhotoObject>
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
+
+    suspend fun postFile(file: FileData)
+    suspend fun postMultipart(file: FileData)
 }
 
 /**
@@ -30,7 +43,7 @@ interface PhotoApi {
  * @param client Ktor [HttpClient] 实例，用于发起 HTTP 请求。
  * 实例化时应提供已配置的 HTTP 客户端，例如设置了超时、重试策略等。
  */
-class KtorPhotoApi(private val client: HttpClient): PhotoApi {
+class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
     companion object {
         /**
          * 存储 API 的 URL 地址，用于访问 JSON 格式的照片列表。
@@ -80,7 +93,7 @@ class KtorPhotoApi(private val client: HttpClient): PhotoApi {
      * @param data 要发送的数据，这里假设是一个 PhotoObject 列表。
      * @return 服务器响应的数据，如果请求失败则返回 null。
      */
-    override suspend fun postData(data:List<PhotoObject>): PhotoObject? {
+    override suspend fun postData(data: List<PhotoObject>): PhotoObject? {
         return try {
             println("发起POST请求到：$API_URL")
             val response = client.post(API_URL) {
@@ -90,7 +103,7 @@ class KtorPhotoApi(private val client: HttpClient): PhotoApi {
             println("POST 请求成功，服务器响应: ${response.status}")
             println(response)
             response.body() // 返回响应体
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             if (e is CancellationException) throw e
             println("POST请求失败：${e.message}")
             e.printStackTrace()
@@ -98,4 +111,56 @@ class KtorPhotoApi(private val client: HttpClient): PhotoApi {
         }
     }
 
+
+    override suspend fun postFile(file: FileData) {
+        val parts = mutableListOf<PartData>()
+        // 如果存在标题，添加标题字段
+        file.title?.let {
+            parts.add(PartData.FormItem("title", { file.title }, Headers.build {
+                append("Content-Disposition", "form-data; name=\"title\"")
+            }))
+        }
+        // 添加描述字段
+        parts.add(PartData.FormItem("description", { file.description }, Headers.build {
+            append("Content-Disposition", "form-data; name=\"description\"")
+        }))
+        val multiPartContent = customMultiPartMixedDataContent(parts)
+        println("MultiPartFormDataContent created: $multiPartContent") // 打印创建的多部分请求体信息
+
+        return try {
+            val response: HttpResponse = client.post("http://10.11.145.242:8080/upload") {
+                setBody(multiPartContent) // MultiPartFormDataContent(parts)
+                // 使用 customMultiPartMixedDataContent 函数创建多部分请求体
+                println("Sending request to http://localhost:8080/upload with body: $body")
+            }
+            response.body()
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            e.printStackTrace()
+        }
+    }
+
+    @OptIn(InternalAPI::class)
+    override suspend fun postMultipart(file: FileData) {
+        val multiPartFormDataContent = MultiPartFormDataContent(formData {
+            appendInput("file", headersOf("Content-Type", "application/octet-stream")) {
+                ByteReadPacket(file.files)
+            }
+            file.title?.let { append("title", it) }
+            append("description", file.description)
+        })
+        val response = client.post("http://10.11.145.242:8080/upload") {
+            setBody(multiPartFormDataContent)
+            println("Sending request to http://localhost:8080/upload with body: $body")
+        }
+        return response.body()
+    }
+
 }
+
+fun customMultiPartMixedDataContent(parts: List<PartData>): MultiPartFormDataContent {
+    val boundary = "WebAppBoundary"
+    val contentType = ContentType.MultiPart.Mixed.withParameter("boundary", boundary)
+    return MultiPartFormDataContent(parts, boundary, contentType)
+}
+

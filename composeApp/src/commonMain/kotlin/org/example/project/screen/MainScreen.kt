@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +58,7 @@ import org.example.project.data.navigation.ScreenType
 import org.example.project.screen.bottomScreen.PageOneContent
 import org.example.project.screen.bottomScreen.PageThrContent
 import org.example.project.screen.bottomScreen.PageTwoContent
+import org.example.project.screen.component.dragOffsetHandler
 import org.example.project.screen.component.fileKit.SampleApp
 import org.example.project.screen.component.other.Others
 
@@ -90,7 +92,7 @@ object MainScreen : Screen {
         when (currentScreen) {
             ScreenType.HOME_SCREEN -> HomeContent(screenModel)
             ScreenType.CHAT_SCREEN -> ChatContent()
-            ScreenType.PUSH_SCREEN -> PushContent()
+            ScreenType.PUSH_SCREEN -> PushContent(screenModel)
             ScreenType.SET_SCREEN -> SettingsContent()
         }
     }
@@ -188,15 +190,49 @@ fun ChatContent() {
 }
 
 @Composable
-fun PushContent() {
+fun PushContent(screenModel: PhotoScreenModel) {
     // 这里是PushScreen页面的内容
-    val navigator = LocalNavigator.currentOrThrow
+    SampleApp(screenModel)
 
 }
 
 @Composable
 fun SettingsContent() {
-    SampleApp()
+    var showDialog by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(Color.LightGray).size(100.dp).clickable {
+                        showDialog = true
+                    }
+            )
+        }
+
+        if (showDialog) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .dragOffsetHandler(onDismiss = { showDialog = false })
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize().background(Color.Black),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.Gray).size(300.dp).clickable { showDialog = false }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

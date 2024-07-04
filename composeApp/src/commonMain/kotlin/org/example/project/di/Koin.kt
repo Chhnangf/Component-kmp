@@ -6,11 +6,11 @@ import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.example.project.data.InMemoryPhotoStorage
-import org.example.project.data.KtorPhotoApi
-import org.example.project.data.PhotoApi
 import org.example.project.data.PhotoRepository
 import org.example.project.data.PhotoScreenModel
 import org.example.project.data.PhotoStorage
+import org.example.project.data.KtorPhotoApi
+import org.example.project.data.PhotoApi
 import org.example.project.screen.detail.DetailScreenModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf

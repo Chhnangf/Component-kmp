@@ -50,9 +50,10 @@ import io.github.vinceglb.filekit.core.PlatformFile
 import io.github.vinceglb.filekit.core.baseName
 import io.github.vinceglb.filekit.core.extension
 import kotlinx.coroutines.launch
+import org.example.project.data.PhotoScreenModel
 
 @Composable
-fun SampleApp() {
+fun SampleApp(screenModel:PhotoScreenModel) {
     var files by remember { mutableStateOf(emptyList<PlatformFile>()) }
     var directory: PlatformDirectory? by remember { mutableStateOf(null) }
     var showDialog by remember { mutableStateOf(false) }

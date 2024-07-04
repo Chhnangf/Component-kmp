@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import org.example.project.data.file.FileData
 
 /**
  * PhotoRepository 类负责管理和获取照片数据。
@@ -51,10 +50,6 @@ class PhotoRepository (
     suspend fun postPhoto(data: List<PhotoObject>) {
         println("postPhoto $data")
         photoApi.postData(data)
-    }
-
-    suspend fun postFile(file: FileData) {
-        photoApi.postFile(file)
     }
 
 }

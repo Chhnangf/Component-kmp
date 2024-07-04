@@ -87,7 +87,7 @@ class PublishScreen() : Screen, KoinComponent {
                                     .clickable {
                                         //showBottomSheet = true
                                         navigator.push(PublishImageScreen())
-                                        //org.example.project.media.ImagePicker.launch()
+                                        //ImagePicker.launch()
                                     }
                                     .size(80.dp).aspectRatio(1f).clip(RoundedCornerShape(6.dp))
                                     .background(Color.LightGray).alpha(0.1f),

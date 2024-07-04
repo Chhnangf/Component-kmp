@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.example.project.data.file.FileData
 
 /**
  * PhotoScreenModel 类负责管理和提供照片数据给 UI 层。
@@ -48,16 +47,6 @@ class PhotoScreenModel(private val photoRepository: PhotoRepository) : ScreenMod
             } catch (e: Exception) {
                 // 捕获并处理异常
                 // 例如显示错误信息
-            }
-        }
-    }
-
-    fun addFileImage(file: FileData) {
-        screenModelScope.launch {
-            try {
-                val result = photoRepository.postFile(file)
-            }catch (e: Exception) {
-
             }
         }
     }

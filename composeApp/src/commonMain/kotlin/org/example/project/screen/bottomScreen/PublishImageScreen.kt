@@ -81,7 +81,7 @@ class PublishImageScreen() : Screen, KoinComponent {
                 )
             },
             content = {
-                //CustomCameraView(::onImageCaptured,org.example.project.media.ImagePicker)
+                //CustomCameraView(::onImageCaptured,ImagePicker)
 
                 val navigator = LocalNavigator.currentOrThrow // 获取当前的navigator实例
 

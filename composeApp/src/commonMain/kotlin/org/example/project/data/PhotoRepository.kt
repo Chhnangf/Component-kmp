@@ -56,5 +56,6 @@ class PhotoRepository (
     suspend fun postFile(file: FileData) {
         println("postPhoto $file")
         photoApi.postFile(file)
+        //photoApi.postMultipart(file)
     }
 }

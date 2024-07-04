@@ -17,6 +17,7 @@ import io.ktor.util.InternalAPI
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.core.ByteReadPacket
+import io.ktor.utils.io.core.Input
 import org.example.project.data.PhotoObject
 import org.example.project.data.file.FileData
 
@@ -114,6 +115,22 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
 
     override suspend fun postFile(file: FileData) {
         val parts = mutableListOf<PartData>()
+        // 创建一个 Input 对象，并使用 fileData.files 中的字节数组填充它
+        val inputProvider: () -> Input = {
+            // 使用 ByteReadPacket 作为 Input 的提供者
+            ByteReadPacket(file.files)
+        }
+        // 创建 BinaryItem 实例
+        val binaryItem = PartData.BinaryItem(
+            provider = inputProvider,
+            dispose = {},
+            partHeaders = Headers.build {
+                // 指定内容的名称和文件名
+                append("Content-Disposition", "form-data; name=\"file\"; filename=\"file.bin\"")
+                // 指定内容的类型，通常对于二进制文件使用 application/octet-stream
+                append("Content-Type", "application/octet-stream")
+            }
+        )
         // 如果存在标题，添加标题字段
         file.title?.let {
             parts.add(PartData.FormItem("title", { file.title }, Headers.build {
@@ -123,6 +140,11 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
         // 添加描述字段
         parts.add(PartData.FormItem("description", { file.description }, Headers.build {
             append("Content-Disposition", "form-data; name=\"description\"")
+        }))
+        //parts.add(binaryItem)
+        parts.add(PartData.BinaryItem({ ByteReadPacket(file.files) }, {}, Headers.build {
+            append("Content-Disposition", "form-data; name=\"file\"; filename=\"file.bin\"")
+            append("Content-Type", "application/octet-stream")
         }))
         val multiPartContent = customMultiPartMixedDataContent(parts)
         println("MultiPartFormDataContent created: $multiPartContent") // 打印创建的多部分请求体信息
@@ -140,7 +162,7 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
         }
     }
 
-    @OptIn(InternalAPI::class)
+
     override suspend fun postMultipart(file: FileData) {
         val multiPartFormDataContent = MultiPartFormDataContent(formData {
             appendInput("file", headersOf("Content-Type", "application/octet-stream")) {

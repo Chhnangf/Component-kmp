@@ -61,7 +61,7 @@ fun ScheduleView() {
 @Composable
 fun TabContent(tab: Routes.TabRoute) {
 
-    // 创建 ImagePicker 和 ImageLoader对象
+    // 创建 org.example.project.media.ImagePicker 和 ImageLoader对象
     val imagePickerImpl = CreateImagePicker()
     val imageLoader = CreateImageLoader()
 

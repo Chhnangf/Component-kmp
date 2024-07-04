@@ -1,7 +1,7 @@
 // Copyright 2023, Christopher Banes and the Haze project contributors
 // SPDX-License-Identifier: Apache-2.0
 
-package org.example.project.screen.component.haze
+package org.example.project.component.haze
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate

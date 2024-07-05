@@ -1,5 +1,6 @@
 package org.example.project.data
 
+import androidx.compose.runtime.mutableStateOf
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -28,12 +29,13 @@ class PhotoScreenModel(private val photoRepository: PhotoRepository) : ScreenMod
         photoRepository.getObjects()
             .stateIn(screenModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val byteArrayState = mutableStateOf<ByteArray?>(null)
 
     /**
      * 向服务器添加新的照片数据。
      * @param photoObjects 要添加的照片对象列表。
      */
-     fun addPhotoObjects(photoObjects: List<PhotoObject>) {
+    fun addPhotoObjects(photoObjects: List<PhotoObject>) {
         screenModelScope.launch {
             try {
                 // 调用 repository 的 addPhoto 方法，并获取结果
@@ -52,16 +54,8 @@ class PhotoScreenModel(private val photoRepository: PhotoRepository) : ScreenMod
         }
     }
 
-    fun addFile(file: FileData) {
-        screenModelScope.launch {
-            try {
-                val result = photoRepository.postFile(file)
-                println("UI -> addFile: $result")
-            } catch (e: Exception) {
-                // 捕获并处理异常
-                // 例如显示错误信息
-            }
-        }
+    suspend fun addFile(file: FileData): ByteArray {
+        return photoRepository.postFile(file)
     }
 
     // 下拉刷新，调用Api从ktor_server获取数据从 photoApi 获取最新数据并调用 photoStorage 保存。

@@ -196,15 +196,36 @@ fun SampleApp(screenModel:PhotoScreenModel) {
 
             }
 
+            val coroutineScope = rememberCoroutineScope()
+
             Button(onClick = {
                 val fileObject = FileData(file, title, description)
                 /** client post to server*/
                 println("UI -> click Button addFileImage -> $fileObject")
-                screenModel.addFile(fileObject)
+                coroutineScope.launch {
+                    screenModel.byteArrayState.value = screenModel.addFile(fileObject)
+                }
+
             }) {
-                Text("发布")
+
+                    Text(text = "提交")
+
             }
 
+            screenModel.byteArrayState.value?.let { byteArray ->
+                Text(text = "Data: $byteArray bytes")
+            }
+
+            screenModel.byteArrayState.value?.let { byteArray ->
+                AsyncImage(
+                    byteArray,
+                    contentDescription = "image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+
+                )
+            }
         }
 
 

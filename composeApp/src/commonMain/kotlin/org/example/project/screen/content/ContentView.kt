@@ -170,7 +170,7 @@ fun PushContent(screenModel: PhotoScreenModel) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().border(1.dp, Color.Red)
             ) {
                 // 静态项：触发图片选择器的按钮
                 item {
@@ -215,13 +215,9 @@ fun PushContent(screenModel: PhotoScreenModel) {
             Column {
                 mediaList.forEach {
                     Text("path:${it?.path}")
-                    AsyncImage(
-                        model = it?.preview?.toByteArray(),
-                        contentDescription = "Image",
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    )
                 }
             }
+
         }
     }
 }
@@ -232,7 +228,7 @@ fun PictureItem(
 ) {
     Box(
         modifier = Modifier
-            .size(100.dp)
+            .size(100.dp).dragOffsetHandler(onDismiss = {})
             .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
     ) {
         AsyncImage(

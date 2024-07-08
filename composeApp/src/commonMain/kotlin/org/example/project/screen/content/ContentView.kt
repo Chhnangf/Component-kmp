@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -205,9 +206,14 @@ fun PushContent(screenModel: PhotoScreenModel) {
                     }
 
                 }
-                items(mediaList) {
+                itemsIndexed(mediaList) { index, it ->
                     if (it != null) {
-                        PictureItem(it.preview.toByteArray())
+                        PictureItem(
+                            byteArray = it.preview.toByteArray(),
+                            onDismiss = {
+                                mediaList.removeAt(index)
+                            }
+                        )
                     }
                 }
             }
@@ -224,11 +230,12 @@ fun PushContent(screenModel: PhotoScreenModel) {
 
 @Composable
 fun PictureItem(
-    byteArray: ByteArray
+    byteArray: ByteArray,
+    onDismiss: () -> Unit,
 ) {
     Box(
         modifier = Modifier
-            .size(100.dp).dragOffsetHandler(onDismiss = {})
+            .size(100.dp).dragOffsetHandler(onDismiss = onDismiss)
             .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
     ) {
         AsyncImage(
@@ -238,7 +245,6 @@ fun PictureItem(
             modifier = Modifier.size(100.dp).aspectRatio(1f)
         )
     }
-
 }
 
 

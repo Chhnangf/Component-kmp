@@ -105,6 +105,20 @@ kotlin {
             implementation(libs.filekit.core)
             implementation(libs.filekit.compose)
 
+            /**
+             *  dragselectCompose
+             *  https://github.com/jordond/drag-select-compose
+             */
+            implementation(libs.dragselect)
+            implementation(libs.dragselect.core)
+            implementation(libs.dragselect.extensions)
+            implementation(libs.dragselect.grid)
+
+
+            // 基础能力
+            implementation("io.github.hellomr3:KmpPictureSelector:0.0.1")
+            // compose
+            implementation("io.github.hellomr3:KmpPictureSelectorCompose:0.0.1")
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
@@ -119,6 +133,7 @@ kotlin {
             implementation(libs.voyager.hilt)
 
             implementation("androidx.activity:activity-compose:1.7.2")
+
 
         }
         iosMain.dependencies {

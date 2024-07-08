@@ -26,6 +26,7 @@ kamel = "0.9.4"
 composeIcons = "1.1.0"
 haze = "0.7.2"
 filekit = "0.6.1"
+dragselectcompose = "2.3.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -88,6 +89,12 @@ coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil
 
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit" }
+
+dragselect = { module = "com.dragselectcompose:dragselect", version.ref = "dragselectcompose" }
+dragselect-core = { module = "com.dragselectcompose:core", version.ref = "dragselectcompose" }
+dragselect-extensions = { module = "com.dragselectcompose:extensions", version.ref = "dragselectcompose" }
+dragselect-grid = { module = "com.dragselectcompose:grid", version.ref = "dragselectcompose" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

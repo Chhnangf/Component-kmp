@@ -162,6 +162,7 @@ fun PushContent(screenModel: PhotoScreenModel) {
     val scope = rememberCoroutineScope()
     val pictureSelector = rememberPictureSelect()
     val mediaList = remember { mutableStateListOf<Media?>(null) }
+
     Scaffold(modifier = Modifier.statusBarsPadding()) {
         Column(
             modifier = Modifier.fillMaxSize().background(Color.LightGray).verticalScroll(
@@ -171,7 +172,7 @@ fun PushContent(screenModel: PhotoScreenModel) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(8.dp),
-                modifier = Modifier.fillMaxWidth().border(1.dp, Color.Red)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 // 静态项：触发图片选择器的按钮
                 item {

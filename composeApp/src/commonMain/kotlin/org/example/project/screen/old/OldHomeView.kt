@@ -1,4 +1,4 @@
-package org.example.project.screen.bottomScreen
+package org.example.project.screen.old
 
 //
 //enum class AppPages(val title: String, val image: ImageVector, val selectImage: ImageVector) {

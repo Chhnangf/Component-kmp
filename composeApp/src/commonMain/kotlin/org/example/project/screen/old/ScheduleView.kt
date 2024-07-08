@@ -1,4 +1,4 @@
-package org.example.project.screen.bottomScreen
+package org.example.project.screen.old
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image

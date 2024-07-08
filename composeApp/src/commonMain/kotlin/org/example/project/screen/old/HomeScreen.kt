@@ -1,4 +1,4 @@
-package org.example.project.screen.bottomScreen
+package org.example.project.screen.old
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.Composable
@@ -129,13 +129,13 @@ data object HomeScreen : Screen {
                                     )
                                 }
                             }
-                            HorizontalPager(state = pagerState) { page ->
-                                when (AppPages.entries[page]) {
-                                    AppPages.PAGE_ONE -> PageOneContent(screenModel)
-                                    AppPages.PAGE_TWO -> PageTwoContent()
-                                    AppPages.PAGE_THEE -> PageThrContent(screenModel)
-                                }
-                            }
+//                            HorizontalPager(state = pagerState) { page ->
+//                                when (AppPages.entries[page]) {
+//                                    AppPages.PAGE_ONE -> PageOneContent(screenModel)
+//                                    AppPages.PAGE_TWO -> PageTwoContent()
+//                                    AppPages.PAGE_THEE -> PageThrContent(screenModel)
+//                                }
+//                            }
                         }
                     }
                 }
@@ -190,207 +190,4 @@ fun NavationBar() {
     }
 }
 
-@Composable
-fun PageOneContent(screenModel: PhotoScreenModel) {
-
-    val scope = rememberCoroutineScope()
-    val pictureSelector = rememberPictureSelect()
-    Scaffold(modifier = Modifier.statusBarsPadding()) {
-        var pictureMedia by remember { mutableStateOf<Media?>(null) }
-        val listPic = remember { mutableStateListOf<Media?>(null) }
-        Column {
-            Button(onClick = {
-                scope.launch {
-                    pictureMedia =
-                        pictureSelector.takePhoto(
-                            params = PictureSelectParams(
-                                maxImageNum = 1,
-                                isCrop = true
-                            )
-                        )
-                            .firstOrNull()
-                            ?.getOrNull()
-                }
-            }) {
-                Text("拍摄照片", modifier = Modifier.padding(horizontal = 24.dp))
-            }
-            Button(onClick = {
-                scope.launch {
-                    pictureMedia =
-                        pictureSelector.takePhoto(
-                            params = PictureSelectParams(
-                                maxImageNum = 0,
-                                maxVideoNum = 2
-                            )
-                        ).firstOrNull()
-                            ?.getOrNull()
-                }
-            }) {
-                Text("拍摄视频", modifier = Modifier.padding(horizontal = 24.dp))
-            }
-            Button(onClick = {
-                scope.launch {
-                        pictureSelector.selectPhoto(
-                            params = PictureSelectParams(
-                                maxImageNum = 1,
-                                maxVideoNum = 9,
-                                isCrop = true
-                            )
-                        ).collect {
-                            it.getOrNull()?.let { mediaList ->
-                                // 将选择的媒体列表收集到 listPic 中
-                                listPic.clear() // 清空旧的列表
-                                listPic.addAll(mediaList) // 添加新的媒体列表
-                            }
-                        }
-                }
-            }) {
-                Text("选择图库", modifier = Modifier.padding(horizontal = 24.dp))
-            }
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text("path:${pictureMedia?.path}")
-                AsyncImage(
-                    model = pictureMedia?.preview?.toByteArray(),
-                    contentDescription = "Image",
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                )
-                listPic.forEach {
-                    AsyncImage(
-                        model = it?.preview?.toByteArray(),
-                        contentDescription = "Image",
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    )
-                }
-            }
-        }
-
-    }
-}
-
-@Composable
-fun PageTwoContent() {
-    // Your content for Page Two here
-    Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("This is Page Two")
-            Loader()
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PageThrContent(screenModel: PhotoScreenModel) {
-
-    val navigator = LocalNavigator.currentOrThrow
-    val objects by screenModel.objects.collectAsState()
-    println(objects)
-
-    val pullToRefreshState = rememberPullToRefreshState()
-    if (pullToRefreshState.isRefreshing) {
-        screenModel.refresh()
-        pullToRefreshState.endRefresh()
-    }
-
-
-    // Your content for Page Two here
-    Box(modifier = Modifier.fillMaxSize().nestedScroll(pullToRefreshState.nestedScrollConnection)) {
-        AnimatedContent(objects.isNotEmpty()) { objectsAvailable ->
-            if (objectsAvailable) {
-                ObjectGrid(
-                    objects = objects,
-                    onObjectClick = { objectId ->
-                        navigator.push(DetailScreen(objectId))
-                    }
-                )
-            } else {
-                EmptyScreenContent(Modifier.fillMaxSize())
-            }
-            PullToRefreshContainer(
-                state = pullToRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-        }
-    }
-}
-
-@Composable
-fun ObjectGrid(
-    objects: List<PhotoObject>,
-    onObjectClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(150.dp),
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp)
-    ) {
-        items(objects, key = { it.objectID }) { obj ->
-            ObjectFrame(
-                obj = obj,
-                onClick = { onObjectClick(obj.objectID) }
-            )
-        }
-    }
-}
-
-@Composable
-fun ObjectFrame(
-    obj: PhotoObject,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier
-            .padding(6.dp)
-            .clickable { onClick() }
-    ) {
-        KamelImage(
-            resource = asyncPainterResource(data = obj.primaryImageSmall),
-            contentDescription = obj.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .background(Color.LightGray)
-        )
-
-        Spacer(Modifier.height(2.dp))
-
-        Text(obj.title)
-        Text(obj.artistDisplayName)
-        Text(obj.objectDate)
-    }
-}
-
-@Composable
-fun Loader() {
-
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.JsonString(
-            Lottie_Chicken
-        )
-    )
-    val progress by animateLottieCompositionAsState(composition)
-//    LottieAnimation(
-//        composition = composition,
-//        progress = {progress},
-//    )
-    LottieAnimation(
-        composition = composition,
-        iterations = LottieConstants.IterateForever,
-    )
-}
-
-@Composable
-fun EmptyScreenContent(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        Text("没有数据！请检查网络")
-    }
-}
 

@@ -1,22 +1,27 @@
-package org.example.project.screen.bottomScreen
+package org.example.project.screen.old
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import org.example.project.viewmodel.SpaceXLaunchHistory
-
 @Composable
-fun StatisticsView() {
+fun SettingView() {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Top,
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
-        SpaceXLaunchHistory()
+        Text(
+            text = "Welcome to the SettingView!",
+            fontSize = 24.sp,
+            color = Color.Black,
+            textAlign = TextAlign.Center
+        )
+
     }
 }

@@ -16,11 +16,11 @@ import compose.icons.evaicons.outline.Home
 import compose.icons.evaicons.outline.Pantone
 import compose.icons.evaicons.outline.PaperPlane
 import compose.icons.evaicons.outline.Settings2
-import org.example.project.screen.bottomScreen.HomeScreen
-import org.example.project.screen.bottomScreen.PublishScreen
-import org.example.project.screen.bottomScreen.ScheduleView
-import org.example.project.screen.bottomScreen.SettingView
-import org.example.project.screen.bottomScreen.StatisticsView
+import org.example.project.screen.old.HomeScreen
+import org.example.project.screen.old.PublishScreen
+import org.example.project.screen.old.ScheduleView
+import org.example.project.screen.old.SettingView
+import org.example.project.screen.old.StatisticsView
 
 class Routes {
     enum class BarRoute {

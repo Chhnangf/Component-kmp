@@ -2,11 +2,13 @@ package org.example.project.screen.content
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,10 +20,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +41,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -154,18 +161,50 @@ fun PushContent(screenModel: PhotoScreenModel) {
     val scope = rememberCoroutineScope()
     val pictureSelector = rememberPictureSelect()
     val mediaList = remember { mutableStateListOf<Media?>(null) }
-    var pictureMedia by remember { mutableStateOf<Media?>(null) }
     Scaffold(modifier = Modifier.statusBarsPadding()) {
-        Column(modifier = Modifier.fillMaxSize().background(Color.LightGray).verticalScroll(
-            rememberScrollState()
-        )) {
-
+        Column(
+            modifier = Modifier.fillMaxSize().background(Color.LightGray).verticalScroll(
+                rememberScrollState()
+            )
+        ) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // 静态项：触发图片选择器的按
+                // 静态项：触发图片选择器的按钮
+                item {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            tint = Color.LightGray,
+                            modifier = Modifier.fillMaxSize().background(Color.White)
+                                .clickable {
+                                    scope.launch {
+                                        pictureSelector.selectPhoto(
+                                            params = PictureSelectParams(
+                                                maxImageNum = 1,
+                                                maxVideoNum = 9,
+                                                isCrop = true
+                                            )
+                                        ).collect {
+                                            it.getOrNull()?.let { listMedia ->
+                                                // 将选择的媒体列表收集到 listPic 中
+                                                mediaList.clear() // 清空旧的列表
+                                                mediaList.addAll(listMedia) // 添加新的媒体列表
+                                            }
+                                        }
+                                    }
+                                }
+                        )
+                    }
+
+                }
                 items(mediaList) {
                     if (it != null) {
                         PictureItem(it.preview.toByteArray())
@@ -174,34 +213,13 @@ fun PushContent(screenModel: PhotoScreenModel) {
             }
 
             Column {
-                Button(onClick = {
-                    scope.launch {
-                        pictureSelector.selectPhoto(
-                            params = PictureSelectParams(
-                                maxImageNum = 1,
-                                maxVideoNum = 9,
-                                isCrop = true
-                            )
-                        ).collect {
-                            it.getOrNull()?.let { listMedia ->
-                                // 将选择的媒体列表收集到 listPic 中
-                                mediaList.clear() // 清空旧的列表
-                                mediaList.addAll(listMedia) // 添加新的媒体列表
-                            }
-                        }
-                    }
-                }) {
-                    Text("上传图片", modifier = Modifier.padding(horizontal = 24.dp))
-                }
-                Column {
-                    Text("path:${pictureMedia?.path}")
-                    mediaList.forEach {
-                        AsyncImage(
-                            model = it?.preview?.toByteArray(),
-                            contentDescription = "Image",
-                            modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                        )
-                    }
+                mediaList.forEach {
+                    Text("path:${it?.path}")
+                    AsyncImage(
+                        model = it?.preview?.toByteArray(),
+                        contentDescription = "Image",
+                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                    )
                 }
             }
         }
@@ -213,12 +231,15 @@ fun PictureItem(
     byteArray: ByteArray
 ) {
     Box(
-        modifier = Modifier.size(100.dp).wrapContentHeight()
+        modifier = Modifier
+            .size(100.dp)
+            .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
     ) {
         AsyncImage(
             model = byteArray,
             contentDescription = "Image",
-            modifier = Modifier.fillMaxWidth().wrapContentHeight()
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(100.dp).aspectRatio(1f)
         )
     }
 

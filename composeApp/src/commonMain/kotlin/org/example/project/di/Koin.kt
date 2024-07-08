@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.example.project.data.InMemoryPhotoStorage
 import org.example.project.data.PhotoRepository
@@ -14,6 +15,7 @@ import org.example.project.data.PhotoApi
 import org.example.project.screen.detail.DetailScreenModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.module
 
 /**
@@ -39,13 +41,22 @@ val dataModule = module {
         }
     }
 
-    single<PhotoApi> { KtorPhotoApi(get()) }
-    single<PhotoStorage> { InMemoryPhotoStorage() }
+    single<PhotoApi> {
+        KtorPhotoApi(get())
+    }
+    single<PhotoStorage> {
+//        this.get<PhotoStorage> {
+//            it.get()
+//        }
+        InMemoryPhotoStorage()
+    }
     single {
         PhotoRepository(get(), get()).apply {
             initalize()
         }
     }
+
+
 }
 
 /**

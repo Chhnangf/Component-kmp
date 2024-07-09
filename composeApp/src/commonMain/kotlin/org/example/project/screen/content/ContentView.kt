@@ -67,8 +67,7 @@ import org.example.project.screen.component.dragOffsetHandler
 fun HomeContent(screenModel: PhotoScreenModel) {
     // 这里是HomeScreen页面的内容
     val pagerState = rememberPagerState(
-        pageCount = { AppPages.entries.size },
-        initialPage = AppPages.PAGE_TWO.ordinal
+        pageCount = { AppPages.entries.size }, initialPage = AppPages.PAGE_TWO.ordinal
     )
     val coroutineScope = rememberCoroutineScope()
 
@@ -86,27 +85,21 @@ fun HomeContent(screenModel: PhotoScreenModel) {
                         // 此处顶部栏样式，可扩展为 -> 自定义+TabRow+自定义
                         TabRow(selectedTabIndex = pagerState.currentPage) {
                             AppPages.entries.forEachIndexed { index, page ->
-                                Tab(
-                                    selected = pagerState.currentPage == index,
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(index)
-                                        }
-                                    },
-                                    text = {
-                                        Text(
-                                            page.title,
-                                            fontSize = 12.sp
-                                        )
-                                    },
-                                    icon = {
-                                        Icon(
-                                            imageVector = if (pagerState.currentPage == index) page.selectImage else page.image,
-                                            "pageIcon",
-                                            modifier = Modifier.size(24.dp)
-                                        )
+                                Tab(selected = pagerState.currentPage == index, onClick = {
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(index)
                                     }
-                                )
+                                }, text = {
+                                    Text(
+                                        page.title, fontSize = 12.sp
+                                    )
+                                }, icon = {
+                                    Icon(
+                                        imageVector = if (pagerState.currentPage == index) page.selectImage else page.image,
+                                        "pageIcon",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                })
                             }
                         }
                         HorizontalPager(state = pagerState) { page ->
@@ -162,82 +155,88 @@ fun PushContent(screenModel: PhotoScreenModel) {
     val scope = rememberCoroutineScope()
     val pictureSelector = rememberPictureSelect()
     val mediaList = remember { mutableStateListOf<Media?>(null) }
-
+    var mediaSingle by remember { mutableStateOf<Media?>(null) }
+    var mediaPreviewState by remember { mutableStateOf(false) }
     Scaffold(modifier = Modifier.statusBarsPadding()) {
-        Column(
-            modifier = Modifier.fillMaxSize().background(Color.LightGray).verticalScroll(
-                rememberScrollState()
-            )
-        ) {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp),
-                modifier = Modifier.fillMaxWidth()
+        Box {
+            Column(
+                modifier = Modifier.fillMaxSize().background(Color.LightGray).verticalScroll(
+                    rememberScrollState()
+                )
             ) {
-                // 静态项：触发图片选择器的按钮
-                item {
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add",
-                            tint = Color.LightGray,
-                            modifier = Modifier.fillMaxSize().background(Color.White)
-                                .clickable {
-                                    scope.launch {
-                                        pictureSelector.selectPhoto(
-                                            params = PictureSelectParams(
-                                                maxImageNum = 1,
-                                                maxVideoNum = 9,
-                                                isCrop = true
-                                            )
-                                        ).collect {
-                                            it.getOrNull()?.let { listMedia ->
-                                                // 将选择的媒体列表收集到 listPic 中
-                                                mediaList.clear() // 清空旧的列表
-                                                mediaList.addAll(listMedia) // 添加新的媒体列表
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // 静态项：触发图片选择器的按钮
+                    item {
+                        Box(
+                            modifier = Modifier.size(100.dp)
+                                .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
+                        ) {
+                            Icon(imageVector = Icons.Default.Add,
+                                contentDescription = "Add",
+                                tint = Color.LightGray,
+                                modifier = Modifier.fillMaxSize().background(Color.White)
+                                    .clickable {
+                                        scope.launch {
+                                            pictureSelector.selectPhoto(
+                                                params = PictureSelectParams(
+                                                    maxImageNum = 1, maxVideoNum = 9, isCrop = true
+                                                )
+                                            ).collect {
+                                                it.getOrNull()?.let { listMedia ->
+                                                    // 将选择的媒体列表收集到 listPic 中
+                                                    mediaList.clear() // 清空旧的列表
+                                                    mediaList.addAll(listMedia) // 添加新的媒体列表
+                                                }
                                             }
                                         }
-                                    }
-                                }
-                        )
-                    }
+                                    })
+                        }
 
-                }
-                itemsIndexed(mediaList) { index, it ->
-                    if (it != null) {
-                        PictureItem(
-                            byteArray = it.preview.toByteArray(),
-                            onDismiss = {
+                    }
+                    itemsIndexed(mediaList) { index, it ->
+                        if (it != null) {
+                            PictureItem(byteArray = it.preview.toByteArray(), onDismiss = {
                                 mediaList.removeAt(index)
-                            }
-                        )
+                            }, onClick = {
+                                mediaPreviewState = !mediaPreviewState
+                                mediaSingle = it
+                            })
+                        }
                     }
                 }
-            }
 
-            Column {
-                mediaList.forEach {
-                    Text("path:${it?.path}")
+                Column {
+                    mediaList.forEach {
+                        Text("path:${it?.path}")
+                    }
+                }
+
+            }
+            if (mediaPreviewState) {
+                mediaSingle?.preview?.let { it1 ->
+                    MediaPreview(byteArray = it1.toByteArray(),
+                        onDismiss = { mediaPreviewState = false })
                 }
             }
-
         }
     }
+
+
 }
 
 @Composable
 fun PictureItem(
     byteArray: ByteArray,
     onDismiss: () -> Unit,
+    onClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .size(100.dp).dragOffsetHandler(onDismiss = onDismiss)
-            .clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
+        modifier = Modifier.size(100.dp).dragOffsetHandler(onDismiss = onDismiss)
+            .clickable { onClick() }.clip(shape = RoundedCornerShape(14.dp)) // 添加圆角效果，14.dp 是圆角的尺寸
     ) {
         AsyncImage(
             model = byteArray,
@@ -248,6 +247,29 @@ fun PictureItem(
     }
 }
 
+@Composable
+fun MediaPreview(
+    byteArray: ByteArray, onDismiss: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black).clickable { onDismiss() }) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Column(modifier = Modifier.dragOffsetHandler { onDismiss() }) {
+                AsyncImage(
+                    model = byteArray,
+                    contentDescription = "Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                )
+            }
+        }
+
+    }
+
+}
 
 @Composable
 fun SettingsContent() {
@@ -259,29 +281,23 @@ fun SettingsContent() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .background(Color.LightGray).size(100.dp).clickable {
-                        showDialog = true
-                    }
-            )
+            Box(modifier = Modifier.background(Color.LightGray).size(100.dp).clickable {
+                showDialog = true
+            })
         }
 
         if (showDialog) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize().background(Color.Black)
                     .dragOffsetHandler(onDismiss = { showDialog = false })
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize().background(Color.Black),
+                    modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .background(Color.Gray).size(300.dp).clickable { showDialog = false }
-                    )
+                    Box(modifier = Modifier.background(Color.Gray).size(300.dp)
+                        .clickable { showDialog = false })
                 }
             }
         }

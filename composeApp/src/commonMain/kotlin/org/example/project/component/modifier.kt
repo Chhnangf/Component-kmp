@@ -33,7 +33,7 @@ fun Modifier.dragOffsetHandler(
 
     val animatedOffset = animateOffsetAsState(
         targetValue = Offset(offsetX,offsetY),
-        animationSpec = spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+        animationSpec = spring(Spring.DampingRatioHighBouncy, Spring.StiffnessHigh)
     )
 
     return Modifier.offset { animatedOffset.value.round() }.pointerInput(Unit) {

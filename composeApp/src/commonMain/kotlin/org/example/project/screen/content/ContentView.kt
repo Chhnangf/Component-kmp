@@ -1,6 +1,7 @@
 package org.example.project.screen.content
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.picture_selector.compose.rememberPictureSelect
+import com.preat.peekaboo.image.picker.toImageBitmap
 import com.usecase.picture_selector.Media
 import com.usecase.picture_selector.PictureSelectParams
 import kotlinx.coroutines.flow.firstOrNull
@@ -151,12 +153,27 @@ fun ChatContent() {
 
 @Composable
 fun PushContent(screenModel: PhotoScreenModel) {
-    //SampleApp(screenModel)
+
     val scope = rememberCoroutineScope()
+
+    /**
+     *  Media data
+     *  1. system album controller
+     *  2. show grid list ui
+     *  3. edit each item
+     *  4. save all system data
+     */
     val pictureSelector = rememberPictureSelect()
     val mediaList = remember { mutableStateListOf<Media?>(null) }
-    var mediaSingle by remember { mutableStateOf<Media?>(null) }
+
+    /**
+     *  MediaListPreview
+     *  1. show state controller
+     *  2. select item page index
+     */
     var mediaPreviewState by remember { mutableStateOf(false) }
+    var pageIndex by remember { mutableStateOf<Int>(0) }
+
     Scaffold(modifier = Modifier.statusBarsPadding()) {
         Box {
             Column(
@@ -204,7 +221,7 @@ fun PushContent(screenModel: PhotoScreenModel) {
                                 onDismiss = { mediaList.removeAt(index) },
                                 onClick = {
                                     mediaPreviewState = !mediaPreviewState
-                                    mediaSingle = it
+                                    pageIndex = index
                                 })
                         }
                     }
@@ -226,15 +243,50 @@ fun PushContent(screenModel: PhotoScreenModel) {
 
             }
             if (mediaPreviewState) {
-                mediaSingle?.preview?.let { it1 ->
-                    MediaPreview(byteArray = it1.toByteArray(),
-                        onDismiss = { mediaPreviewState = false })
-                }
+                MediaListPreview(
+                    media = mediaList.filterNotNull(),
+                    index = pageIndex,
+                    onDismiss = { mediaPreviewState = false }
+                )
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MediaListPreview(
+    media:List<Media>,
+    index: Int,
+    onDismiss: () -> Unit
+){
+    // 预先转换所有 Media 对象的 preview 属性到字节数组，并创建映射表
+    val byteArrayList = remember(media) {
+        media.map { it.preview.toByteArray() }
+    }
+
+    val pagerState = rememberPagerState(pageCount = { media.size }, initialPage = index)
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black).clickable { onDismiss() }) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Column(modifier = Modifier.dragOffsetHandler { onDismiss() }) {
+                HorizontalPager(state = pagerState) { index ->
+                    // 从映射表中获取对应的字节数组
+                    val byteArray = byteArrayList[index]
+                    AsyncImage(
+                        model = byteArray,
+                        contentDescription = "Image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                    )
+                }
+            }
+        }
+    }
+}
 @Composable
 fun PictureItem(
     byteArray: ByteArray,
@@ -256,7 +308,8 @@ fun PictureItem(
 
 @Composable
 fun MediaPreview(
-    byteArray: ByteArray, onDismiss: () -> Unit
+    byteArray: ByteArray,
+    onDismiss: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize().background(Color.Black).clickable { onDismiss() }) {
         Column(

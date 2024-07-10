@@ -199,19 +199,28 @@ fun PushContent(screenModel: PhotoScreenModel) {
                     }
                     itemsIndexed(mediaList) { index, it ->
                         if (it != null) {
-                            PictureItem(byteArray = it.preview.toByteArray(), onDismiss = {
-                                mediaList.removeAt(index)
-                            }, onClick = {
-                                mediaPreviewState = !mediaPreviewState
-                                mediaSingle = it
-                            })
+                            PictureItem(
+                                byteArray = it.preview.toByteArray(),
+                                onDismiss = { mediaList.removeAt(index) },
+                                onClick = {
+                                    mediaPreviewState = !mediaPreviewState
+                                    mediaSingle = it
+                                })
                         }
                     }
                 }
 
+                // content
                 Column {
                     mediaList.forEach {
-                        Text("path:${it?.path}")
+                        Text("text: ${it?.name}, path:${it?.path}")
+                    }
+                    Button(onClick = {
+                        // 过滤掉 mediaList 中的 null 值，并转换为 List<Media>
+                        val mediaListNotNull = mediaList.filterNotNull()
+                        screenModel.uploadPicture(mediaListNotNull)
+                    }) {
+                        Text("POST MEDIA")
                     }
                 }
 
@@ -224,8 +233,6 @@ fun PushContent(screenModel: PhotoScreenModel) {
             }
         }
     }
-
-
 }
 
 @Composable

@@ -1,5 +1,7 @@
 package org.example.project.data
 
+import androidx.compose.runtime.rememberCoroutineScope
+import com.usecase.picture_selector.Media
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +15,7 @@ import org.example.project.data.file.FileData
  * @param photoApi PhotoApi 实例，用于从远程 API 获取照片数据。
  * @param photoStorage PhotoStorage 实例，用于在本地存储中保存和检索照片数据。
  */
-class PhotoRepository (
+class PhotoRepository(
     private val photoApi: PhotoApi,
     private val photoStorage: PhotoStorage
 ) {
@@ -53,10 +55,16 @@ class PhotoRepository (
         println("postPhoto $data")
         photoApi.postData(data)
     }
-    suspend fun postFile(file: FileData):ByteArray {
+
+    suspend fun postFile(file: FileData): ByteArray {
         println("postPhoto $file")
         return photoApi.postFile(file)
         //photoApi.postMultipart(file)
+    }
+
+    suspend fun uploadPicture(picture: List<Media>) {
+
+        photoApi.uploadPicture(picture)
 
     }
 }

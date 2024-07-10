@@ -1,6 +1,7 @@
 package org.example.project.data
 
 import com.bumble.appyx.interactions.UUID
+import com.usecase.picture_selector.Media
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -36,8 +37,9 @@ interface PhotoApi {
     suspend fun getData(): List<PhotoObject>
     suspend fun postData(data: List<PhotoObject>): PhotoObject?
 
-    suspend fun postFile(file: FileData):ByteArray
-    suspend fun postMultipart(file: FileData)
+    suspend fun postFile(file: FileData): ByteArray
+
+    suspend fun uploadPicture(picture: List<Media>)
 }
 
 /**
@@ -117,7 +119,7 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
     }
 
 
-    override suspend fun postFile(file: FileData):ByteArray {
+    override suspend fun postFile(file: FileData): ByteArray {
         val parts = mutableListOf<PartData>()
 
         // 生成全局唯一标识符
@@ -137,7 +139,9 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
         }))
         //parts.add(binaryItem)
         parts.add(PartData.BinaryItem({ ByteReadPacket(file.files) }, {}, Headers.build {
-            append("Content-Disposition", "form-data; name=\"image\"; filename=\"{$uniqueFileName}\"") // 根据需要更改字段名和文件名
+            append(
+                "Content-Disposition", "form-data; name=\"image\"; filename=\"{$uniqueFileName}\""
+            ) // 根据需要更改字段名和文件名
             append("Content-Type", "application/octet-stream") // 根据你的图片类型更改MIME
         }))
         val multiPartContent = customMultiPartMixedDataContent(parts)
@@ -145,7 +149,7 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
         val response: HttpResponse
 
         return try {
-            response  = client.post("http://10.11.145.242:8080/upload") {
+            response = client.post("http://10.11.145.242:8080/upload") {
                 setBody(multiPartContent) // MultiPartFormDataContent(parts)
                 // 使用 customMultiPartMixedDataContent 函数创建多部分请求体
                 println("Sending request to http://10.11.145.242:8080/upload with body: $body")
@@ -156,7 +160,7 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
             println("Received response with status: ${response.status}")
             if (response.status == HttpStatusCode.OK) {
                 // 仅当响应状态为 OK 时，返回响应体
-                 response.body()
+                response.body()
             } else {
                 // 如果响应状态不是 OK，可以在这里处理错误情况，例如抛出异常或返回空数组
                 throw IllegalStateException("Unexpected response status: ${response.status}")
@@ -169,20 +173,47 @@ class KtorPhotoApi(private val client: HttpClient) : PhotoApi {
     }
 
 
-    override suspend fun postMultipart(file: FileData) {
-        val multiPartFormDataContent = MultiPartFormDataContent(formData {
-            appendInput("file", headersOf("Content-Type", "application/octet-stream")) {
-                ByteReadPacket(file.files)
-            }
-            file.title?.let { append("title", it) }
-            append("description", file.description)
-        })
-        val response = client.post("http://10.11.145.242:8080/upload") {
-            setBody(multiPartFormDataContent)
-            println("Sending request to http://localhost:8080/upload with body: $body")
+    override suspend fun uploadPicture(media: List<Media>) {
+        val parts = mutableListOf<PartData>()
+        for ((index, picture) in media.withIndex()) {
+            val uniqueFileName = "media_${index}_${picture.name}" // 文件名
+            parts.add(PartData.BinaryItem(
+                provider = { ByteReadPacket(picture.preview.toByteArray()) },
+                dispose = {},
+                partHeaders = Headers.build {
+                    append(
+                        "Content-Disposition",
+                        "form-data; name=\"image\"; filename= \"${uniqueFileName}\" "
+                    ) // 根据需要更改字段名和文件名
+                    append("Content-Type", "application/octet-stream") // 根据你的图片类型更改MIME
+                }))
         }
-        return response.body()
+
+        val multiPartContent = customMultiPartMixedDataContent(parts)
+
+        return try {
+            val response: HttpResponse = client.post("http://10.11.145.242:8080/upload") {
+                setBody(multiPartContent) // MultiPartFormDataContent(parts)
+                // 使用 customMultiPartMixedDataContent 函数创建多部分请求体
+                println("Sending request to http://10.11.145.242:8080/upload with body: $body")
+            }
+            println("response: $response")
+            // 记录响应接收
+            println("Received response with status: ${response.status}")
+            if (response.status == HttpStatusCode.OK) {
+                // 仅当响应状态为 OK 时，返回响应体
+                response.body()
+            } else {
+                // 如果响应状态不是 OK，可以在这里处理错误情况，例如抛出异常或返回空数组
+                throw IllegalStateException("Unexpected response status: ${response.status}")
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            e.printStackTrace()
+            throw e
+        }
     }
+
 
 }
 

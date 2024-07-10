@@ -3,6 +3,7 @@ package org.example.project.data
 import androidx.compose.runtime.mutableStateOf
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.usecase.picture_selector.Media
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -56,6 +57,12 @@ class PhotoScreenModel(private val photoRepository: PhotoRepository) : ScreenMod
 
     suspend fun addFile(file: FileData): ByteArray {
         return photoRepository.postFile(file)
+    }
+
+    fun uploadPicture(media: List<Media>) {
+        screenModelScope.launch {
+            photoRepository.uploadPicture(media)
+        }
     }
 
     // 下拉刷新，调用Api从ktor_server获取数据从 photoApi 获取最新数据并调用 photoStorage 保存。

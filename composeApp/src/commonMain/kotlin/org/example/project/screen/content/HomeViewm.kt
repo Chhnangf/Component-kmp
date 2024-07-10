@@ -26,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -66,6 +67,11 @@ fun PageOneContent(screenModel: PhotoScreenModel) {
     Scaffold(modifier = Modifier.statusBarsPadding()) {
         var pictureMedia by remember { mutableStateOf<Media?>(null) }
         val listPic = remember { mutableStateListOf<Media?>(null) }
+
+        LaunchedEffect(listPic.size) {
+            println("Current : ${listPic.size}")
+        }
+
         Column {
             Button(onClick = {
                 scope.launch {
@@ -123,6 +129,7 @@ fun PageOneContent(screenModel: PhotoScreenModel) {
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
                 )
                 listPic.forEach {
+                    println("listPic: $it")
                     AsyncImage(
                         model = it?.preview?.toByteArray(),
                         contentDescription = "Image",
